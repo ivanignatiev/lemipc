@@ -1,25 +1,25 @@
 /*
-** my_list.c for LinkedList in /home/couvig_v/ProjetsEnCours/LinkedList
+** my_list.c for LinkedList in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC/LinkedList
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Mon Mar 25 23:52:55 2013 vincent couvignou
-** Last update Tue Mar 26 00:57:08 2013 vincent couvignou
+** Last update Tue Mar 26 17:00:40 2013 vincent couvignou
 */
 
 #include "my_list.h"
 
-static void add_front_copy(my_list this, my_item src_item);
-static void add_back_copy(my_list this, my_item src_item);
-static void add_front(my_list this, void *data, int len);
-static void add_back(my_list this, void *data, int len);
-static bool exits(my_list this, void *data, int len);
-static void iter(my_list this, void (*f)(void *, int));
-static my_list map(my_list this, my_item (*f)(void *, int));
-static void associate_functions(my_list src_list);
+static void add_front_copy(t_my_list this, t_my_item src_item);
+static void add_back_copy(t_my_list this, t_my_item src_item);
+static void add_front(t_my_list this, void *data, int len);
+static void add_back(t_my_list this, void *data, int len);
+static bool exits(t_my_list this, void *data, int len);
+static void iter(t_my_list this, void (*f)(void *, int));
+static t_my_list map(t_my_list this, t_my_item (*f)(void *, int));
+static void associate_functions(t_my_list src_list);
 
-void associate_functions(my_list src_list)
+void associate_functions(t_my_list src_list)
 {
   src_list->add_front_copy = &add_front_copy;
   src_list->add_back_copy = &add_back_copy;
@@ -30,11 +30,11 @@ void associate_functions(my_list src_list)
   src_list->map = &map;
 }
 
-my_list		new_list_default()
+t_my_list		new_list_default()
 {
-  my_list	new_list;
+  t_my_list	new_list;
 
-  if ((new_list = (my_list)(malloc(sizeof(t_list)))) == NULL)
+  if ((new_list = (t_my_list)(malloc(sizeof(t_list)))) == NULL)
     return (NULL);
   new_list->size_list = 0;
   new_list->is_empty = true;
@@ -44,9 +44,9 @@ my_list		new_list_default()
   return (new_list);
 }
 
-void		delete_list(my_list src_list)
+void		delete_list(t_my_list src_list)
 {
-  my_item	tmp;
+  t_my_item	tmp;
 
   tmp = src_list->head;
   while (src_list->head != NULL)
@@ -58,9 +58,9 @@ void		delete_list(my_list src_list)
   free(src_list);
 }
 
-static void	add_front_copy(my_list this, my_item src_item)
+static void	add_front_copy(t_my_list this, t_my_item src_item)
 {
-  my_item	new_item;
+  t_my_item	new_item;
 
   new_item = new_item_cpy(src_item);
   if (new_item == NULL || this == NULL)
@@ -75,10 +75,10 @@ static void	add_front_copy(my_list this, my_item src_item)
   if (this->size_list == 1)
     this->tail = new_item;
 }
-static void	add_back_copy(my_list this, my_item src_item)
+static void	add_back_copy(t_my_list this, t_my_item src_item)
 {
-  my_item	new_item;
-  my_item	tmp;
+  t_my_item	new_item;
+  t_my_item	tmp;
 
   new_item = new_item_cpy(src_item);
   if (new_item == NULL || this == NULL)
@@ -102,9 +102,9 @@ static void	add_back_copy(my_list this, my_item src_item)
   this->size_list++;
   this->is_empty = false;
 }
-static void	add_front(my_list this, void *data, int len)
+static void	add_front(t_my_list this, void *data, int len)
 {
-  my_item	new_item;
+  t_my_item	new_item;
 
   new_item = new_item_params(data, len);
   if (new_item == NULL || this == NULL)
@@ -120,10 +120,10 @@ static void	add_front(my_list this, void *data, int len)
     this->tail = new_item;
 
 }
-static void	add_back(my_list this, void *data, int len)
+static void	add_back(t_my_list this, void *data, int len)
 {
-  my_item	new_item;
-  my_item	tmp;
+  t_my_item	new_item;
+  t_my_item	tmp;
 
   new_item = new_item_params(data, len);
   if (new_item == NULL || this == NULL)
@@ -147,9 +147,9 @@ static void	add_back(my_list this, void *data, int len)
   this->size_list++;
   this->is_empty = false;
 }
-static bool	exits(my_list this, void *data, int len)
+static bool	exits(t_my_list this, void *data, int len)
 {
-  my_item	tmp;
+  t_my_item	tmp;
 
   if (this == NULL)
     return (false);
@@ -162,9 +162,9 @@ static bool	exits(my_list this, void *data, int len)
   }
   return (false);
 }
-static void iter(my_list this, void (*f)(void *, int))
+static void iter(t_my_list this, void (*f)(void *, int))
 {
-  my_item	tmp;
+  t_my_item	tmp;
 
   if (this == NULL || f == NULL)
     return ;
@@ -175,11 +175,11 @@ static void iter(my_list this, void (*f)(void *, int))
     tmp = tmp->next;
   }
 }
-static my_list map(my_list this, my_item (*f)(void *, int))
+static t_my_list map(t_my_list this, t_my_item (*f)(void *, int))
 {
-  my_item	tmp;
-  my_item 	new_item;
-  my_list	new_list;
+  t_my_item	tmp;
+  t_my_item 	new_item;
+  t_my_list	new_list;
 
   new_list = new_list_default();
   if (this == NULL || f == NULL || new_list == NULL)

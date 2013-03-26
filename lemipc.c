@@ -5,12 +5,16 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 17:17:00 2013 ivan ignatiev
+<<<<<<< HEAD
+** Last update Tue Mar 26 17:36:45 2013 ivan ignatiev
+=======
+** Last update Tue Mar 26 17:28:24 2013 vincent couvignou
+>>>>>>> e6a73dbd023d3c157a8095116c24ebc1eb1db9b0
 */
 
 #include "lemipc.h"
 
-static t_fct_messages p_fct[3];
+static t_fct_messages p_fct[NB_KIND];
 
 void		display_field(unsigned char *field)
 {
@@ -90,7 +94,8 @@ int             send_message_to_player(t_ipc_res *ipc_res, t_player *player, int
   return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), 0));
 }
 
-# define MASTER_MSG_TYPE 1
+# define MASTER_MSG_TYPE    1
+# define FIGTH_TIMEOUT      5
 
 int             send_message_to_master(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
@@ -235,8 +240,10 @@ void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *
     int         i;
 
     i = 0;
-    while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < 3)
+    while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < NB_KIND)
       i++;
+    if (i != NB_KIND)
+      p_fct[i].p_fct(ipc_res, player, msg);
 }
 
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
@@ -262,9 +269,11 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
   printf("PLAYER NUM : %d\n", player->num);
   sprintf(present_msg, "NEWP:%d", player->num);
   send_msg_to_team(ipc_res, player, count_players_in_team(player, field) + 1, present_msg);
+  send_message_to_master(ipc_res, player, present_msg);
   place_player(ipc_res, player, field);
-  printf("Waiting for battle !");
-
+/*  printf("Waiting for battle !");
+  recv_battle_msg(ipc_res, player);
+  printf("Battle begun!");*/
   while (1)
     {
      if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
@@ -277,11 +286,12 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
       }
      if (player_kill(ipc_res, player, field))
         return (EXIT_SUCCESS);
-      if (count_players_in_team(player, field) == count_players(field))
+/*      if (count_players_in_team(player, field) == count_players(field))
       {
         printf("Team %d won!\n", player->team_id);
         return (EXIT_SUCCESS);
       }
+*/
       usleep(10000);
     }
   return (EXIT_SUCCESS);
@@ -291,6 +301,8 @@ int		master_process(t_ipc_res * ipc_res)
 {
   char		c;
   unsigned char *field;
+  t_msg         recv_msg;
+  t_player      player;
 
  if (semctl(ipc_res->sem_id, 0, SETVAL, 1) == -1)
     return (EXIT_FAILURE);
@@ -300,7 +312,13 @@ int		master_process(t_ipc_res * ipc_res)
   printf("FIELD ID : %d\n", ipc_res->field_id);
   printf("SEM ID : %d\n", ipc_res->sem_id);
   printf("MSG ID : %d\n", ipc_res->msg_id);
-  player->num = MASTER_MSG_TYPE;
+  player.num = MASTER_MSG_TYPE;
+/*  sleep(FIGTH_TIMEOUT);
+  while (recv_msg_from_team(ipc_res, &player, &recv_msg) > 0)
+    {
+       TODO: Parse num and send fight begin
+    }
+    */
 
   while (1)
     {
@@ -356,6 +374,7 @@ int		main(int argc, char **argv)
       return (EXIT_FAILURE);
     }
   init_fct(p_fct);
+  player.player_list = new_list_default();
   srand(time(NULL));
   player.team_id = atoi(argv[1]);
   player.sh_i = -1;

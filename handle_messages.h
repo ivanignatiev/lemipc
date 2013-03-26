@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:00:23 2013 vincent couvignou
-** Last update Tue Mar 26 16:28:05 2013 vincent couvignou
+** Last update Tue Mar 26 17:26:31 2013 vincent couvignou
 */
 
 #ifndef HANDLE_MESSAGES_H_
@@ -16,6 +16,7 @@
 # include "lemipc_structures.h"
 # define MESSAGE_SIZE	128
 # define KIND_MESSAGE_S	5
+# define NB_KIND	4
 
 typedef struct	s_fct_messages
 {

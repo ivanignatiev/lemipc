@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Tue Mar 26 16:23:13 2013 vincent couvignou
+** Last update Tue Mar 26 17:27:14 2013 vincent couvignou
 */
 
 #include "handle_messages.h"
@@ -42,12 +42,35 @@ void	move_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   /* Find where to move and move one case... */
 }
 
+void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+{
+  int		player_num;
+  char		resp[MESSAGE_SIZE];
+  t_my_item	tmp;
+  t_player_list	*tmp_player;
+
+  tmp_player = NULL;
+  sscanf(msg, "DIEP:%d", &player_num);
+  sprintf(resp, "DIEP:%d", player->num);
+  tmp = player->player_list->head;
+  while (tmp != NULL)
+  {
+    bcopy(tmp_player, tmp->content, tmp->size);
+    if (tmp_player->player_number == player_num)
+    {
+      tmp_player->activated = false;
+      return ;
+    }
+    tmp = tmp->next;
+  }
+}
+
 void	init_fct(t_fct_messages *fct_array)
 {
   int	i;
 
   i = -1;
-  while (++i < 3)
+  while (++i < NB_KIND)
     bzero(fct_array[i].name, KIND_MESSAGE_S);
   strcpy(fct_array[0].name, "NEWP:");
   fct_array[0].p_fct = &newp_messages;
@@ -55,4 +78,6 @@ void	init_fct(t_fct_messages *fct_array)
   fct_array[1].p_fct = &oldp_messages;
   strcpy(fct_array[2].name, strdup("MOVE:"));
   fct_array[2].p_fct = &move_messages;
+  strcpy(fct_array[3].name, strdup("DIEP:"));
+  fct_array[3].p_fct = &diep_messages;
 }

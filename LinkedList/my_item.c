@@ -1,10 +1,10 @@
 #include "my_item.h"
 
-my_item 	new_item_default()
+t_my_item 	new_item_default()
 {
-  my_item 	new_item;
+  t_my_item 	new_item;
 
-  if ((new_item = (my_item)(malloc(sizeof(t_item)))) == NULL)
+  if ((new_item = (t_my_item)(malloc(sizeof(t_item)))) == NULL)
     return (NULL);
   new_item->content = NULL;
   new_item->size = 0;
@@ -13,11 +13,11 @@ my_item 	new_item_default()
   return (new_item);
 }
 
-my_item 	new_item_params(void *src_content, const int src_size)
+t_my_item 	new_item_params(void *src_content, const int src_size)
 {
-  my_item 	new_item;
+  t_my_item 	new_item;
 
-  if ((new_item = (my_item)(malloc(sizeof(t_item)))) == NULL)
+  if ((new_item = (t_my_item)(malloc(sizeof(t_item)))) == NULL)
     return (NULL);
   new_item->content = src_content;
   new_item->size = src_size;
@@ -26,11 +26,11 @@ my_item 	new_item_params(void *src_content, const int src_size)
   return (new_item);
 }
 
-my_item 	new_item_cpy(my_item src_item)
+t_my_item 	new_item_cpy(t_my_item src_item)
 {
-  my_item 	new_item;
+  t_my_item 	new_item;
 
-  if ((new_item = (my_item)(malloc(sizeof(t_item)))) == NULL
+  if ((new_item = (t_my_item)(malloc(sizeof(t_item)))) == NULL
       || src_item == NULL)
     return (NULL);
   new_item->content = src_item->content;
@@ -40,7 +40,7 @@ my_item 	new_item_cpy(my_item src_item)
   return (new_item);
 }
 
-void 		delete_item(my_item src_item)
+void 		delete_item(t_my_item src_item)
 {
   if (src_item == NULL)
     return ;
