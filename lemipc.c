@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Mon Mar 25 18:20:38 2013 ivan ignatiev
+** Last update Tue Mar 26 15:01:37 2013 ivan ignatiev
 */
 
 #include <sys/ipc.h>
@@ -65,19 +65,12 @@ int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player, const char *msg)
   bzero(&snd_msg, sizeof(t_msg));
   strcpy(snd_msg.msg, msg);
   snd_msg.mtype = player->team_id;
-
-  printf("try send : %s\n", msg);
-
-  printf("try send : %s\n", snd_msg.msg);
-
   return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), 0));
 }
 
 int		recv_msg_from_team(t_ipc_res *ipc_res, t_player *player, t_msg *msg)
 {
-  int a;
-  a = msgrcv(ipc_res->msg_id, (void*)msg, sizeof(t_msg), player->team_id, IPC_NOWAIT);
-  return (0);
+  return (msgrcv(ipc_res->msg_id, (void*)msg, sizeof(t_msg), player->team_id, IPC_NOWAIT));
 }
 
 void		lock_sem(t_ipc_res *ipc_res)
