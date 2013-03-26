@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 16:34:19 2013 ivan ignatiev
+** Last update Tue Mar 26 16:40:50 2013 ivan ignatiev
 */
 
 #include "lemipc.h"
@@ -102,9 +102,19 @@ int             get_shm_index(int x, int y)
   int           sh_i;
 
   sh_i = (y * WIDTH + x);
-  if (sh_i >= (WIDTH * HEIGHT))
+  if (sh_i >= (WIDTH * HEIGHT) || sh_i < 0)
     return (-1);
   return (sh_i);
+}
+
+int             get_shm_cell(int x, int y, unsigned char *field)
+{
+  int           sh_i;
+
+  sh_i = (y * WIDTH + x);
+  if (sh_i >= (WIDTH * HEIGHT) || sh_i < 0)
+    return (-1);
+  return (field[sh_i]);
 }
 
 void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
@@ -162,14 +172,14 @@ int             player_kill(t_ipc_res *ipc_res, t_player *player, unsigned char 
   int           around[8];
   char          die_msg[100];
 
-  around[0] =  field[get_shm_index(player->x - 1, player->y - 1)];
-  around[1] =  field[get_shm_index(player->x, player->y - 1)];
-  around[2] =  field[get_shm_index(player->x + 1, player->y - 1)];
-  around[3] =  field[get_shm_index(player->x - 1, player->y)];
-  around[4] =  field[get_shm_index(player->x + 1, player->y)];
-  around[5] =  field[get_shm_index(player->x - 1, player->y + 1)];
-  around[6] =  field[get_shm_index(player->x, player->y + 1)];
-  around[7] =  field[get_shm_index(player->x + 1, player->y + 1)];
+  around[0] =  get_shm_cell(player->x - 1, player->y - 1, field);
+  around[1] =  get_shm_cell(player->x, player->y - 1, field);
+  around[2] =  get_shm_cell(player->x + 1, player->y - 1, field);
+  around[3] =  get_shm_cell(player->x - 1, player->y, field);
+  around[4] =  get_shm_cell(player->x + 1, player->y, field);
+  around[5] =  get_shm_cell(player->x - 1, player->y + 1, field);
+  around[6] =  get_shm_cell(player->x, player->y + 1, field);
+  around[7] =  get_shm_cell(player->x + 1, player->y + 1, field);
   if (count_aliens(player->team_id, around))
   {
     lock_sem(ipc_res);
