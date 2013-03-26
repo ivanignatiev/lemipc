@@ -5,12 +5,12 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 14:28:07 2013 ivan ignatiev
+** Last update Tue Mar 26 15:59:43 2013 ivan ignatiev
 */
 
 #include "lemipc.h"
 
-void		display_field(t_ipc_res *ipc_res, unsigned char *field)
+void		display_field(unsigned char *field)
 {
   int		i;
 
@@ -24,19 +24,57 @@ void		display_field(t_ipc_res *ipc_res, unsigned char *field)
     }
 }
 
-int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player, const char *msg)
+int         count_players_in_team(t_player *player, unsigned char *field)
+{
+  int       count;
+  int       i;
+
+  count = -1;
+  i = 0;
+  while (i < WIDTH * HEIGHT)
+  {
+    if (field[i] == player->team_id)
+      count = count + 1;
+    i = i + 1;
+  }
+  return (count);
+}
+
+int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player, int count, const char *msg)
+{
+  t_msg		snd_msg;
+  int           player_num;
+  int           last_num;
+
+  bzero(&snd_msg, sizeof(t_msg));
+  strcpy(snd_msg.msg, msg);
+  player_num = player->team_id * 10;
+  last_num = count + player_num;
+  while (player_num <= last_num)
+  {
+    if (player_num != player->num)
+    {
+        snd_msg.mtype = player_num;
+        msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), 0);
+    }
+    player_num = player_num + 1;
+  }
+  return (0);
+}
+
+int             send_message_to_player(t_ipc_res *ipc_res, t_player *player, int player_num, const char *msg)
 {
   t_msg		snd_msg;
 
   bzero(&snd_msg, sizeof(t_msg));
   strcpy(snd_msg.msg, msg);
-  snd_msg.mtype = player->team_id;
+  snd_msg.mtype = player_num;
   return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), 0));
 }
 
 int		recv_msg_from_team(t_ipc_res *ipc_res, t_player *player, t_msg *msg)
 {
-  return (msgrcv(ipc_res->msg_id, (void*)msg, sizeof(t_msg), player->team_id, IPC_NOWAIT));
+  return (msgrcv(ipc_res->msg_id, (void*)msg, sizeof(t_msg), player->num, IPC_NOWAIT));
 }
 
 void		lock_sem(t_ipc_res *ipc_res)
@@ -61,7 +99,7 @@ void		unlock_sem(t_ipc_res *ipc_res)
 
 void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
-  char		msg[100];
+  char		move_msg[100];
 
   if (player->sh_i >= 0)
     {
@@ -80,31 +118,70 @@ void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
     }
   lock_sem(ipc_res);
   field[player->sh_i] = player->team_id;
-  sprintf(msg, "I moved to %d\n", player->sh_i);
-  send_msg_to_team(ipc_res, player, msg);
+  sprintf(move_msg, "MOVE:%d:%d:%d:%d", player->num, player->x, player->y, player->sh_i);
+  send_msg_to_team(ipc_res, player, count_players_in_team(player, field), move_msg);
   unlock_sem(ipc_res);
+}
+
+void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *msg)
+{
+    int         player_num;
+    char        resp[100];
+
+    if (strncmp(msg, "NEWP:", 5) == 0)
+    {
+      sscanf(msg, "NEWP:%d", &player_num);
+      sprintf(resp, "OLDP:%d", player->num);
+      send_message_to_player(ipc_res, player, player_num, resp);
+      printf("New player came to our team (%d)!\n", player_num);
+    }
+    else if (strncmp(msg, "OLDP:", 5) == 0)
+    {
+      sscanf(msg, "OLDP:%d", &player_num);
+      printf("Old player in  our team (%d)!\n", player_num);
+    }
+    else if (strncmp(msg, "MOVE:", 5) == 0)
+    {
+      sscanf(msg, "MOVE:%d", &player_num);
+      printf("Player %d : move\n", player_num);
+    }
 }
 
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
 {
-  t_msg		msg;
+  t_msg		ipc_msg;
   int		msg_size;
   unsigned char *field;
+  char		present_msg[100];
 
-  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R)) == NULL)
+  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W)) == NULL)
     return (EXIT_FAILURE);
   printf("SLAVE\n");
   printf("FIELD ID : %d\n", ipc_res->field_id);
   printf("SEM ID : %d\n", ipc_res->sem_id);
   printf("MSG ID : %d\n", ipc_res->msg_id);
+  player->num = count_players_in_team(player, field) + 1;
+  if (player->num >= MAX_TEAM_NUM)
+  {
+    fprintf(stderr, "You're late, team don't love you -21\n");
+    return (EXIT_FAILURE);
+  }
+  player->num += (player->team_id * 10);
+  printf("PLAYER NUM : %d\n", player->num);
+  sprintf(present_msg, "NEWP:%d", player->num);
+  send_msg_to_team(ipc_res, player, count_players_in_team(player, field) + 1, present_msg);
   while (1)
     {
+     if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
+	parse_message(ipc_res, player, ipc_msg.msg);
+      else if (msg_size == -1 && errno != ENOMSG)
+      {
+        perror("");
+        fprintf(stderr, "Shared ressources closed\n");
+	return (EXIT_FAILURE);
+      }
       place_player(ipc_res, player, field);
       usleep(10000);
-      if ((msg_size = recv_msg_from_team(ipc_res, player, &msg)) > 0)
-	printf("MESSAGE : %s", msg.msg);
-      else if (msg_size == -1)
-	return (EXIT_FAILURE);
     }
   return (EXIT_SUCCESS);
 }
@@ -116,7 +193,7 @@ int		master_process(t_ipc_res * ipc_res)
 
  if (semctl(ipc_res->sem_id, 0, SETVAL, 1) == -1)
     return (EXIT_FAILURE);
-  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R)) == NULL)
+  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W)) == NULL)
     return (EXIT_FAILURE);
   printf("MASTER\n");
   printf("FIELD ID : %d\n", ipc_res->field_id);
@@ -124,7 +201,7 @@ int		master_process(t_ipc_res * ipc_res)
   printf("MSG ID : %d\n", ipc_res->msg_id);
   while (1)
     {
-      display_field(ipc_res, field);
+      display_field(field);
       read(1, &c, 1);
       if (c == 'q')
 	{
