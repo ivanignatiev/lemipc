@@ -5,12 +5,12 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 17:04:42 2013 vincent couvignou
+** Last update Tue Mar 26 17:28:24 2013 vincent couvignou
 */
 
 #include "lemipc.h"
 
-static t_fct_messages p_fct[3];
+static t_fct_messages p_fct[NB_KIND];
 
 void		display_field(unsigned char *field)
 {
@@ -26,10 +26,10 @@ void		display_field(unsigned char *field)
     }
 }
 
-int         count_players_in_team(t_player *player, unsigned char *field)
+int		count_players_in_team(t_player *player, unsigned char *field)
 {
-  int       count;
-  int       i;
+  int		count;
+  int		i;
 
   count = -1;
   i = 0;
@@ -99,6 +99,26 @@ void		unlock_sem(t_ipc_res *ipc_res)
   semop(ipc_res->sem_id, &sem, 1);
 }
 
+int             get_shm_index(int x, int y)
+{
+  int           sh_i;
+
+  sh_i = (y * WIDTH + x);
+  if (sh_i >= (WIDTH * HEIGHT) || sh_i < 0)
+    return (-1);
+  return (sh_i);
+}
+
+int             get_shm_cell(int x, int y, unsigned char *field)
+{
+  int           sh_i;
+
+  sh_i = (y * WIDTH + x);
+  if (sh_i >= (WIDTH * HEIGHT) || sh_i < 0)
+    return (-1);
+  return (field[sh_i]);
+}
+
 void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
   char		move_msg[100];
@@ -111,12 +131,12 @@ void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
     }
   player->x = rand() % WIDTH;
   player->y = rand() % HEIGHT;
-  player->sh_i = player->y * WIDTH + player->x;
+  player->sh_i = get_shm_index(player->x, player->y);
   while (field[player->sh_i] != 0 && semctl(ipc_res->sem_id, 0, GETVAL) > 0)
     {
       player->x = rand() % WIDTH;
       player->y = rand() % HEIGHT;
-      player->sh_i = player->y * WIDTH + player->x;
+      player->sh_i = get_shm_index(player->x, player->y);
     }
   lock_sem(ipc_res);
   field[player->sh_i] = player->team_id;
@@ -125,14 +145,64 @@ void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
   unlock_sem(ipc_res);
 }
 
+int             count_aliens(int my_team, int *around)
+{
+  int           i;
+  int           j;
+  int           count;
+
+  i = 0;
+  while (i < 8)
+  {
+    j = 0;
+    count = 0;
+    while (j < 8)
+    {
+      if (around[j] == around[i] && around[j] != my_team && around[j] > 0)
+        count = count + 1;
+      j = j + 1;
+    }
+    if (count >= 2)
+      return (1);
+    i = i + 1;
+  }
+  return (0);
+}
+
+int             player_kill(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
+{
+  int           around[8];
+  char          die_msg[100];
+
+  around[0] =  get_shm_cell(player->x - 1, player->y - 1, field);
+  around[1] =  get_shm_cell(player->x, player->y - 1, field);
+  around[2] =  get_shm_cell(player->x + 1, player->y - 1, field);
+  around[3] =  get_shm_cell(player->x - 1, player->y, field);
+  around[4] =  get_shm_cell(player->x + 1, player->y, field);
+  around[5] =  get_shm_cell(player->x - 1, player->y + 1, field);
+  around[6] =  get_shm_cell(player->x, player->y + 1, field);
+  around[7] =  get_shm_cell(player->x + 1, player->y + 1, field);
+  if (count_aliens(player->team_id, around))
+  {
+    lock_sem(ipc_res);
+    field[player->sh_i] = 0;
+    unlock_sem(ipc_res);
+    sprintf(die_msg, "DIEP:%d", player->num);
+    send_msg_to_team(ipc_res, player, count_players_in_team(player, field), die_msg);
+    printf("They killed me!\n");
+    return (1);
+  }
+  return (0);
+}
+
 void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
     int         i;
 
     i = 0;
-    while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < 3)
+    while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < NB_KIND)
       i++;
-    if (i != 3)
+    if (i != NB_KIND)
       p_fct[i].p_fct(ipc_res, player, msg);
 }
 
@@ -170,6 +240,8 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
 	return (EXIT_FAILURE);
       }
       place_player(ipc_res, player, field);
+      if (player_kill(ipc_res, player, field))
+        return (EXIT_SUCCESS);
       usleep(10000);
     }
   return (EXIT_SUCCESS);

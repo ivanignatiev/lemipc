@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:26:00 2013 vincent couvignou
-** Last update Tue Mar 26 17:01:34 2013 vincent couvignou
+** Last update Tue Mar 26 17:13:22 2013 vincent couvignou
 */
 
 #ifndef LEMIPC_STRUCTURES_H_
@@ -37,6 +37,7 @@ typedef struct	s_ipc_res
 typedef struct	s_player_list
 {
   int		player_number;
+  bool		activated;
   int		player_x;
   int		player_y;
 }		t_player_list;
