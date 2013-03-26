@@ -1,53 +1,19 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i//projects/lemipc
+** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 15:01:37 2013 ivan ignatiev
+** Last update Tue Mar 26 14:28:07 2013 ivan ignatiev
 */
 
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/sem.h>
-#include <sys/msg.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+#include "lemipc.h"
 
-#define WIDTH 20
-#define HEIGHT 20
-
-typedef struct  s_ipc_res
-{
-  int	field_id;
-  int	sem_id;
-  int	msg_id;
-} t_ipc_res;
-
-typedef struct s_player
-{
-  int	x;
-  int	y;
-  int   sh_i;
-  long	team_id;
-} t_player;
-
-typedef struct s_msg
-{
-  long	mtype;
-  char	msg[255];
-} t_msg;
-
-void		display_field(t_ipc_res *ipc_res)
+void		display_field(t_ipc_res *ipc_res, unsigned char *field)
 {
   int		i;
-  unsigned char *field;
 
-  field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R);
   i = 0;
   while (i < WIDTH * HEIGHT)
     {
@@ -93,12 +59,10 @@ void		unlock_sem(t_ipc_res *ipc_res)
   semop(ipc_res->sem_id, &sem, 1);
 }
 
-void		place_player(t_ipc_res *ipc_res, t_player *player)
+void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
   char		msg[100];
-  unsigned char *field;
 
-  field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W );
   if (player->sh_i >= 0)
     {
       lock_sem(ipc_res);
@@ -124,19 +88,23 @@ void		place_player(t_ipc_res *ipc_res, t_player *player)
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
 {
   t_msg		msg;
+  int		msg_size;
+  unsigned char *field;
 
+  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R)) == NULL)
+    return (EXIT_FAILURE);
   printf("SLAVE\n");
   printf("FIELD ID : %d\n", ipc_res->field_id);
   printf("SEM ID : %d\n", ipc_res->sem_id);
   printf("MSG ID : %d\n", ipc_res->msg_id);
   while (1)
     {
-      place_player(ipc_res, player);
+      place_player(ipc_res, player, field);
       usleep(10000);
-      if (recv_msg_from_team(ipc_res, player, &msg) > 0)
-	{
-	  printf("MESSAGE : %s", msg.msg);
-	}
+      if ((msg_size = recv_msg_from_team(ipc_res, player, &msg)) > 0)
+	printf("MESSAGE : %s", msg.msg);
+      else if (msg_size == -1)
+	return (EXIT_FAILURE);
     }
   return (EXIT_SUCCESS);
 }
@@ -144,8 +112,11 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
 int		master_process(t_ipc_res * ipc_res)
 {
   char		c;
+  unsigned char *field;
 
-  if (semctl(ipc_res->sem_id, 0, SETVAL, 1) == -1)
+ if (semctl(ipc_res->sem_id, 0, SETVAL, 1) == -1)
+    return (EXIT_FAILURE);
+  if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R)) == NULL)
     return (EXIT_FAILURE);
   printf("MASTER\n");
   printf("FIELD ID : %d\n", ipc_res->field_id);
@@ -153,14 +124,14 @@ int		master_process(t_ipc_res * ipc_res)
   printf("MSG ID : %d\n", ipc_res->msg_id);
   while (1)
     {
-      display_field(ipc_res);
+      display_field(ipc_res, field);
       read(1, &c, 1);
       if (c == 'q')
 	{
 	  shmctl(ipc_res->field_id, IPC_RMID, NULL);
 	  semctl(ipc_res->sem_id, 0, IPC_RMID, NULL);
 	  msgctl(ipc_res->msg_id, IPC_RMID, NULL);
-	  return (0);
+	  return (EXIT_SUCCESS);
 	}
       read(1, &c, 1);
     }
@@ -200,7 +171,10 @@ int		main(int argc, char **argv)
   t_player	player;
 
   if (argc < 2)
-    return (EXIT_FAILURE);
+    {
+      fprintf(stderr, "Too few arguments. Use : ./lemipc [team_number]\n");
+      return (EXIT_FAILURE);
+    }
   srand(time(NULL));
   player.team_id = atoi(argv[1]);
   player.sh_i = -1;
