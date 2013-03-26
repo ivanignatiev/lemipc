@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 16:33:23 2013 vincent couvignou
+** Last update Tue Mar 26 17:04:42 2013 vincent couvignou
 */
 
 #include "lemipc.h"
@@ -132,6 +132,8 @@ void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *
     i = 0;
     while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < 3)
       i++;
+    if (i != 3)
+      p_fct[i].p_fct(ipc_res, player, msg);
 }
 
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
@@ -240,6 +242,7 @@ int		main(int argc, char **argv)
       return (EXIT_FAILURE);
     }
   init_fct(p_fct);
+  player.player_list = new_list_default();
   srand(time(NULL));
   player.team_id = atoi(argv[1]);
   player.sh_i = -1;
