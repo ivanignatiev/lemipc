@@ -1,14 +1,16 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Tue Mar 26 15:59:43 2013 ivan ignatiev
+** Last update Tue Mar 26 16:33:23 2013 vincent couvignou
 */
 
 #include "lemipc.h"
+
+static t_fct_messages p_fct[3];
 
 void		display_field(unsigned char *field)
 {
@@ -125,26 +127,11 @@ void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 
 void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
-    int         player_num;
-    char        resp[100];
+    int         i;
 
-    if (strncmp(msg, "NEWP:", 5) == 0)
-    {
-      sscanf(msg, "NEWP:%d", &player_num);
-      sprintf(resp, "OLDP:%d", player->num);
-      send_message_to_player(ipc_res, player, player_num, resp);
-      printf("New player came to our team (%d)!\n", player_num);
-    }
-    else if (strncmp(msg, "OLDP:", 5) == 0)
-    {
-      sscanf(msg, "OLDP:%d", &player_num);
-      printf("Old player in  our team (%d)!\n", player_num);
-    }
-    else if (strncmp(msg, "MOVE:", 5) == 0)
-    {
-      sscanf(msg, "MOVE:%d", &player_num);
-      printf("Player %d : move\n", player_num);
-    }
+    i = 0;
+    while (strncmp(msg, p_fct[i].name, strlen(p_fct[i].name)) && i < 3)
+      i++;
 }
 
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
@@ -252,6 +239,7 @@ int		main(int argc, char **argv)
       fprintf(stderr, "Too few arguments. Use : ./lemipc [team_number]\n");
       return (EXIT_FAILURE);
     }
+  init_fct(p_fct);
   srand(time(NULL));
   player.team_id = atoi(argv[1]);
   player.sh_i = -1;
