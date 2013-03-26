@@ -1,16 +1,17 @@
 ##
-## Makefile for lemipc in /home/ignati_i//projects/lemipc
-## 
+## Makefile for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+##
 ## Made by ivan ignatiev
 ## Login   <ignati_i@epitech.net>
-## 
+##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Tue Mar 26 14:15:15 2013 ivan ignatiev
+## Last update Tue Mar 26 16:34:14 2013 vincent couvignou
 ##
 
 
-SRCS 	= 	lemipc.c \
-		./LinkedList/my_item.c \
+SRCS 	= 	lemipc.c			\
+			handle_messages.c	\
+		./LinkedList/my_item.c	\
 		./LinkedList/my_list.c
 
 NAME 	= 	lemipc
