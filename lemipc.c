@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Thu Mar 28 18:32:01 2013 ivan ignatiev
+** Last update Thu Mar 28 18:41:52 2013 ivan ignatiev
 */
 
 #include "lemipc.h"
@@ -157,7 +157,8 @@ void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
   char		move_msg[100];
 
- player->x = rand() % WIDTH;
+  clear_player(ipc_res, player, field);
+  player->x = rand() % WIDTH;
   player->y = rand() % HEIGHT;
   player->sh_i = get_shm_index(player->x, player->y);
   while (field[player->sh_i] != 0 && semctl(ipc_res->sem_id, 0, GETVAL) > 0)
@@ -266,6 +267,8 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
   printf("Battle begun!\n");
   while (1)
     {
+  place_player(ipc_res, player, field);
+
      if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg);
       else if (msg_size == -1 && errno != ENOMSG)
