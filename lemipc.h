@@ -1,11 +1,11 @@
 /*
-** lemipc.h for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** lemipc.h for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Tue Mar 26 14:17:37 2013 ivan ignatiev
-** Last update Tue Mar 26 16:29:21 2013 vincent couvignou
+** Last update Thu Mar 28 00:24:28 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_H_
@@ -19,8 +19,8 @@ int	        count_players_in_team(t_player *player, unsigned char *field);
 int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player, int count, const char *msg);
 int             send_message_to_player(t_ipc_res *ipc_res, t_player *player, int player_num, const char *msg);
 int		recv_msg_from_team(t_ipc_res *ipc_res, t_player *player, t_msg *msg);
-void		lock_sem(t_ipc_res *ipc_res);
-void		unlock_sem(t_ipc_res *ipc_res);
+void		lock_sem(t_ipc_res *ipc_res, int i);
+void		unlock_sem(t_ipc_res *ipc_res, int i);
 void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field);
 void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *msg);
 int		slave_process(t_ipc_res *ipc_res, t_player *player);

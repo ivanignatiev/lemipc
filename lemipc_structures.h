@@ -1,11 +1,11 @@
 /*
-** lemipc_structures.h for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** lemipc_structures.h for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:26:00 2013 vincent couvignou
-** Last update Tue Mar 26 17:13:22 2013 vincent couvignou
+** Last update Thu Mar 28 03:15:50 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_STRUCTURES_H_
@@ -23,9 +23,11 @@
 # include <errno.h>
 # include "LinkedList/my_list.h"
 
-# define WIDTH 20
-# define HEIGHT 20
-# define MAX_TEAM_NUM 10
+# define WIDTH                  10
+# define HEIGHT                 10
+# define MAX_TEAM_NUM           10
+# define FIGTH_TIMEOUT          10
+# define AVAILBL_PLACES_SEM     (WIDTH * HEIGHT)
 
 typedef struct	s_ipc_res
 {

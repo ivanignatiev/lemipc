@@ -1,11 +1,11 @@
 /*
-** handle_messages.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** handle_messages.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Tue Mar 26 17:27:14 2013 vincent couvignou
+** Last update Thu Mar 28 00:40:22 2013 ivan ignatiev
 */
 
 #include "handle_messages.h"
@@ -29,6 +29,7 @@ void	oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 
   sscanf(msg, "OLDP:%d", &player_num);
   sprintf(resp, "OLDP:%d", player->num);
+  printf("Old player %d\n", player_num);
   /* TODO : Add player to our list ! */
 }
 
