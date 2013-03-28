@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Thu Mar 28 12:09:11 2013 ivan ignatiev
+** Last update Thu Mar 28 12:16:27 2013 ivan ignatiev
 */
 
 #include "lemipc.h"
@@ -322,6 +322,7 @@ int		master_process(t_ipc_res *ipc_res)
 
   if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W)) == NULL)
     return (EXIT_FAILURE);
+  memset(field, 0, WIDTH * HEIGHT);
   sems_init(ipc_res);
   printf("MASTER\n");
   printf("FIELD ID : %d\n", ipc_res->field_id);
