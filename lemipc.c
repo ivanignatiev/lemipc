@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Thu Mar 28 12:16:27 2013 ivan ignatiev
+** Last update Thu Mar 28 18:32:01 2013 ivan ignatiev
 */
 
 #include "lemipc.h"
@@ -143,17 +143,21 @@ int             get_shm_cell(int x, int y, unsigned char *field)
   return (field[sh_i]);
 }
 
+void            clear_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
+{
+  if (player->sh_i >= 0)
+  {
+    lock_sem(ipc_res, player->sh_i);
+    field[player->sh_i] = 0;
+    unlock_sem(ipc_res, player->sh_i);
+  }
+}
+
 void		place_player(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
   char		move_msg[100];
 
-  if (player->sh_i >= 0)
-    {
-      lock_sem(ipc_res, player->sh_i);
-      field[player->sh_i] = 0;
-      unlock_sem(ipc_res, player->sh_i);
-    }
-  player->x = rand() % WIDTH;
+ player->x = rand() % WIDTH;
   player->y = rand() % HEIGHT;
   player->sh_i = get_shm_index(player->x, player->y);
   while (field[player->sh_i] != 0 && semctl(ipc_res->sem_id, 0, GETVAL) > 0)
@@ -236,6 +240,8 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
   int		msg_size;
   unsigned char *field;
   char		present_msg[100];
+  int           cnt_pl_in_team;
+  int           cnt_pl;
   int           sem;
 
   if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W)) == NULL)
@@ -268,10 +274,25 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
 	return (EXIT_FAILURE);
       }
      if (player_kill(ipc_res, player, field))
+     {
+       clear_player(ipc_res, player, field);
         return (EXIT_SUCCESS);
-      if ((count_players_in_team(player, field) + 1) == count_players(field))
+     }
+     cnt_pl_in_team = count_players_in_team(player, field) + 1;
+     cnt_pl =  count_players(field);
+     if (cnt_pl_in_team == 1)
+     {
+       printf("I can't kill them, because I'm single I've just kill my self.\n");
+       clear_player(ipc_res, player, field);
+       if (cnt_pl_in_team == cnt_pl)
+         clear_ressources(ipc_res);
+       return (EXIT_SUCCESS);
+     }
+     else if (cnt_pl_in_team == cnt_pl)
       {
         printf("Team %d won!\n", player->team_id);
+        clear_player(ipc_res, player, field);
+        clear_ressources(ipc_res);
         return (EXIT_SUCCESS);
       }
       usleep(10000);
