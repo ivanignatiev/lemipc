@@ -1,36 +1,50 @@
 /*
-** handle_messages.c for lemipc in /home/ignati_i/projects/lemipc
+** handle_messages.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Thu Mar 28 00:40:22 2013 ivan ignatiev
+** Last update Fri Mar 29 11:47:10 2013 vincent couvignou
 */
 
 #include "handle_messages.h"
 
-void	newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
-  int	player_num;
-  char	resp[MESSAGE_SIZE];
+  int			player_num;
+  t_player_list		*newp;
+  char			resp[MESSAGE_SIZE];
 
+  if ((newp = malloc(sizeof(*newp))) == NULL)
+    return ;
   sscanf(msg, "NEWP:%d", &player_num);
   sprintf(resp, "OLDP:%d", player->num);
   send_message_to_player(ipc_res, player, player_num, resp);
   printf("New player came to our team (%d)!\n", player_num);
-  /* TODO : Add player to our list ! */
+  newp->player_number = player_num;
+  newp->activated = true;
+  newp->player_x = 0;
+  newp->player_y = 0;
+  player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
 void	oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
   int	player_num;
+  t_player_list		*newp;
   char	resp[MESSAGE_SIZE];
 
+if ((newp = malloc(sizeof(*newp))) == NULL)
+    return ;
   sscanf(msg, "OLDP:%d", &player_num);
   sprintf(resp, "OLDP:%d", player->num);
   printf("Old player %d\n", player_num);
-  /* TODO : Add player to our list ! */
+  newp->player_number = player_num;
+  newp->activated = true;
+  newp->player_x = 0;
+  newp->player_y = 0;
+  player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
 void	move_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)

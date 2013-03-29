@@ -20,7 +20,7 @@ void		display_field(unsigned char *field)
   while (i < WIDTH * HEIGHT)
     {
       printf("%u ", field[i]);
-      if ((i + 1) % WIDTH == 0)
+      f ((i + 1) % WIDTH == 0)
 	printf("\n");
       i = i + 1;
     }
