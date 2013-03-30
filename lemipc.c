@@ -308,7 +308,7 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
 
       if (!run_away(player, field, ipc_res))
       {
-	printf("Random move %d[%d]!!\n", player->team_id, player->num);
+	printf("Random move %ld[%d]!!\n", player->team_id, player->num);
 	random_move(player, field, ipc_res);
       }
  //     else
