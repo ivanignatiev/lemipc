@@ -5,7 +5,7 @@
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sat Mar 30 16:57:38 2013 ivan ignatiev
+## Last update Sat Mar 30 18:21:18 2013 vincent couvignou
 ##
 
 
@@ -24,7 +24,7 @@ NAME 	= 	lemipc
 GNAME	=	gui
 
 CFLAGS  += 	-I./LinkedList
-CFLAGS 	+= 	-W -Wextra
+CFLAGS 	+= 	-Wall -Wextra
 
 OBJS 	=	$(SRCS:.c=.o)
 GOBJS 	=	$(GSRCS:.c=.o)

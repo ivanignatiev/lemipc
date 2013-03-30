@@ -1,11 +1,11 @@
 /*
-** gui.c for lemipc in /home/ignati_i//projects/lemipc
+** gui.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 17:00:32 2013 ivan ignatiev
+** Last update Sat Mar 30 18:34:48 2013 vincent couvignou
 */
 
 #include	"lemipc.h"
@@ -25,7 +25,6 @@ void		lock_sem(t_ipc_res *ipc_res, int i)
 void		unlock_sem(t_ipc_res *ipc_res, int i)
 {
   struct sembuf	sem;
-  int		avsem;
 
   sem.sem_num = i;
   sem.sem_flg = 0;
@@ -81,7 +80,7 @@ void		ressources_info(t_ipc_res *ipc_res)
 }
 
 
-int		main(int argc, char **argv)
+int		main()
 {
   key_t		key;
   t_ipc_res	ipc_res;
