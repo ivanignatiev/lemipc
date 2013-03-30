@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
-** Last update Sat Mar 30 20:12:47 2013 vincent couvignou
+** Last update Sat Mar 30 20:43:00 2013 vincent couvignou
 */
 
 #include "run_away.h"
@@ -13,6 +13,7 @@
 #include "lemipc_structures.h"
 
 unsigned char debug_field[HEIGHT][WIDTH];
+int  (*t_fct[4])();
 
 void	print_field(unsigned char d_field[HEIGHT][WIDTH])
 {
@@ -228,10 +229,8 @@ int	go_right(t_player *player, unsigned char d_field[HEIGHT][WIDTH])
 static int		move_right(t_player *player, unsigned char *field,
     			t_ipc_res *ipc_res)
 {
-  int			sh_i;
   int			decision;
 
-  sh_i = player->sh_i;
   printf("right[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x, player->y + 1);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
@@ -252,16 +251,14 @@ static int		move_right(t_player *player, unsigned char *field,
 static int		move_left(t_player *player, unsigned char *field,
     t_ipc_res *ipc_res)
 {
-  int			sh_i;
   int			decision;
 
-  sh_i = player->sh_i;
   printf("left[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x, player->y - 1);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
     return (0);
   lock_sem(ipc_res, player->sh_i);
-  field[sh_i] = 0;
+  field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
   lock_sem(ipc_res, decision);
   printf("left lock decision : %d\n", decision);
@@ -276,10 +273,8 @@ static int		move_left(t_player *player, unsigned char *field,
 static int		move_up(t_player *player, unsigned char *field,
     t_ipc_res *ipc_res)
 {
-  int			sh_i;
   int			decision;
 
-  sh_i = player->sh_i;
   printf("up[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x - 1, player->y);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
@@ -300,10 +295,8 @@ static int		move_up(t_player *player, unsigned char *field,
 static int		move_down(t_player *player, unsigned char *field,
     t_ipc_res *ipc_res)
 {
-  int			sh_i;
   int			decision;
 
-  sh_i = player->sh_i;
   printf("down[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x + 1, player->y);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
@@ -321,6 +314,62 @@ static int		move_down(t_player *player, unsigned char *field,
   return (1);
 }
 
+static int test_down(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
+    unsigned char d_field[HEIGHT][WIDTH])
+{
+  if (go_down(player, d_field) && player->x + 1 < HEIGHT
+      && d_field[player->x + 1][player->y] == 0)
+    return (move_down(player, field, ipc_res));
+  return (0);
+}
+
+static int test_up(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
+    unsigned char d_field[HEIGHT][WIDTH])
+{
+  if (go_up(player, d_field) && player->x - 1 > 0
+      && d_field[player->x - 1][player->y] == 0)
+    return (move_up(player, field, ipc_res));
+  return (0);
+}
+static int test_left(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
+    unsigned char d_field[HEIGHT][WIDTH])
+{
+  if (go_left(player, d_field) && player->y - 1 > 0
+      && d_field[player->x][player->y - 1] == 0)
+    return (move_left(player, field, ipc_res));
+  return (0);
+}
+static int test_right(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
+    unsigned char d_field[HEIGHT][WIDTH])
+{
+  if (go_right(player, d_field) && player->y + 1 < WIDTH
+      && d_field[player->x][player->y + 1] == 0)
+    return (move_right(player, field, ipc_res));
+  return (0);
+}
+
+bool		test_random(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
+    unsigned char d_field[HEIGHT][WIDTH])
+
+{
+  int		i;
+  int		value;
+
+  t_fct[0] = &test_up;
+  t_fct[1] = &test_down;
+  t_fct[2] = &test_right;
+  t_fct[3] = &test_left;
+  while (++i < 4)
+  {
+    value = rand() % 4;
+    while (t_fct[value] == NULL)
+      value = rand() % 4;
+    if (t_fct[value](player, field, ipc_res, d_field))
+      return (true);
+    t_fct[value] = NULL;
+  }
+  return (false);
+}
 
 int		run_away(t_player *player, unsigned char *field,
     			t_ipc_res *ipc_res)
@@ -336,17 +385,5 @@ int		run_away(t_player *player, unsigned char *field,
   sleep(2);
   if (nb_allies > nb_ennemies)
     return (0);
-  if (go_up(player, d_field) && player->x - 1 > 0
-      && d_field[player->x - 1][player->y] == 0)
-    return (move_up(player, field, ipc_res));
-  else if (go_right(player, d_field) && player->y + 1 < WIDTH
-      	&& d_field[player->x][player->y + 1] == 0)
-    return (move_right(player, field, ipc_res));
-  else if (go_left(player, d_field) && player->y - 1 > 0
-      && d_field[player->x][player->y - 1] == 0)
-    return (move_left(player, field, ipc_res));
-  else if (go_down(player, d_field) && player->x + 1 < HEIGHT
-      && d_field[player->x + 1][player->y] == 0)
-    return (move_down(player, field, ipc_res));
-  return (0);
+  return (test_random(player, field, ipc_res, d_field));
 }
