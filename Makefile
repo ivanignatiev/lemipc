@@ -5,7 +5,7 @@
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sat Mar 30 16:57:38 2013 ivan ignatiev
+## Last update Sat Mar 30 18:35:53 2013 ivan ignatiev
 ##
 
 
@@ -39,7 +39,7 @@ $(NAME) : $(OBJS)
 	$(CC) $(OBJS) -o $(NAME) -lm
 
 $(GNAME) : $(GOBJS)
-	$(CC) $(GOBJS) -o $(GNAME) -lm
+	$(CC) $(GOBJS) -o $(GNAME) -lncurses
 
 
 clean	:
