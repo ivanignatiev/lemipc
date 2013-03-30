@@ -5,14 +5,17 @@
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Tue Mar 26 16:34:14 2013 vincent couvignou
+## Last update Sat Mar 30 14:47:16 2013 vincent couvignou
 ##
 
 
 SRCS 	= 	lemipc.c			\
 			handle_messages.c	\
-		./LinkedList/my_item.c	\
-		./LinkedList/my_list.c
+			run_away.c			\
+			random_move.c		\
+			attack.c			\
+			./LinkedList/my_item.c	\
+			./LinkedList/my_list.c
 
 NAME 	= 	lemipc
 
@@ -28,7 +31,7 @@ RM 	=	 rm -f
 all 	: $(NAME)
 
 $(NAME) : $(OBJS)
-	$(CC) $(OBJS) -o $(NAME)
+	$(CC) $(OBJS) -o $(NAME) -lm
 
 clean	:
 	$(RM) $(OBJS)

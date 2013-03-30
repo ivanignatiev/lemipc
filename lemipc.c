@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Fri Mar 29 16:53:04 2013 vincent couvignou
+** Last update Sat Mar 30 14:45:32 2013 vincent couvignou
 */
 
 #include <time.h>
@@ -21,7 +21,7 @@ void		display_field(unsigned char *field)
   while (i < WIDTH * HEIGHT)
     {
       printf("%u ", field[i]);
-      f ((i + 1) % WIDTH == 0)
+      if ((i + 1) % WIDTH == 0)
 	printf("\n");
       i = i + 1;
     }
