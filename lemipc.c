@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 15:07:09 2013 ivan ignatiev
+** Last update Sat Mar 30 15:57:08 2013 vincent couvignou
 */
 
 #include	"lemipc.h"
@@ -236,7 +236,7 @@ void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *
     while (strncmp(msg, g_p_fct[i].name, strlen(g_p_fct[i].name)) && i < NB_KIND)
       i++;
     if (i != NB_KIND)
-      g_p_fct[i].g_p_fct(ipc_res, player, msg);
+      g_p_fct[i].p_fct(ipc_res, player, msg);
 }
 
 int		slave_process(t_ipc_res *ipc_res, t_player *player)
@@ -271,8 +271,13 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
   printf("Battle begun!\n");
   while (1)
     {
-      if (!run_away(player, field))
+      if (!run_away(player, field, ipc_res))
+      {
+	printf("Random move %d[%d]!!\n", player->team_id, player->num);
 	random_move(player, field, ipc_res);
+      }
+      else
+	printf("Run away %d[%d]!!\n", player->team_id, player->num);
       if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg);
       else if (msg_size == -1 && errno != ENOMSG)
@@ -302,7 +307,7 @@ int		slave_process(t_ipc_res *ipc_res, t_player *player)
 	  clear_ressources(ipc_res);
 	  return (EXIT_SUCCESS);
 	}
-      usleep(10000);
+      sleep(2);
     }
   return (EXIT_SUCCESS);
 }
@@ -415,7 +420,7 @@ int		main(int argc, char **argv)
       fprintf(stderr, "Too few arguments. Use : ./lemipc [team_number]\n");
       return (EXIT_FAILURE);
     }
-  init_fct(p_fct);
+  init_fct(g_p_fct);
   player.player_list = new_list_default();
   srand(time(NULL));
   player.team_id = atoi(argv[1]);

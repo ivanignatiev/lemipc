@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 16:46:11 2013 vincent couvignou
-** Last update Sat Mar 30 14:58:49 2013 ivan ignatiev
+** Last update Sat Mar 30 16:17:49 2013 vincent couvignou
 */
 
 #include "random_move.h"
@@ -27,11 +27,14 @@ void	move(unsigned char *field, t_player *player,
 {
   int	p_case;
 
+  printf("Random move[move]\n");
   p_case = rand() % 8;
   lock_sem(ipc_res, player->sh_i);
   field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
-  player->sh_i = p_case;
+  player->sh_i = around[p_case];
+  player->x = around[p_case] / HEIGHT;
+  player->y = around[p_case] % HEIGHT;
   lock_sem(ipc_res, player->sh_i);
   field[player->sh_i] = player->team_id;
   unlock_sem(ipc_res, player->sh_i);
