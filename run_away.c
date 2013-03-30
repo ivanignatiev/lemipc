@@ -1,16 +1,14 @@
 /*
 ** run_away.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
- ** 
- ** Made by vincent couvignou
- ** Login   <couvig_v@epitech.net>
- ** 
- ** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
-** Last update Fri Mar 29 15:59:26 2013 vincent couvignou
- */
+** 
+** Made by vincent couvignou
+** Login   <couvig_v@epitech.net>
+** 
+** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
+** Last update Sat Mar 30 14:57:21 2013 ivan ignatiev
+*/
 
-#include "lemipc_structures.h"
-
-#define DEF_RANGE	4
+# include "run_away.h"
 
 void		create_dfield(unsigned char *field,
     unsigned char d_field[HEIGHT][WIDTH])

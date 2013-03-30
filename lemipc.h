@@ -5,14 +5,17 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Tue Mar 26 14:17:37 2013 ivan ignatiev
-** Last update Thu Mar 28 00:24:28 2013 ivan ignatiev
+** Last update Sat Mar 30 14:59:47 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_H_
 # define LEMIPC_H_
 
-# include "handle_messages.h"
 # include <time.h>
+# include "handle_messages.h"
+# include "run_away.h"
+# include "random_move.h"
+# include "lemipc_structures.h"
 
 void		display_field(unsigned char *field);
 int	        count_players_in_team(t_player *player, unsigned char *field);
@@ -26,4 +29,5 @@ void            parse_message(t_ipc_res *ipc_res, t_player *player, const char *
 int		slave_process(t_ipc_res *ipc_res, t_player *player);
 int		run_game(key_t key, t_player *player);
 int		main(int argc, char **argv);
+
 #endif /* !LEMIPC_H_ */

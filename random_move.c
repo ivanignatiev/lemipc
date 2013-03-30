@@ -5,11 +5,10 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 16:46:11 2013 vincent couvignou
-** Last update Sat Mar 30 13:34:37 2013 vincent couvignou
+** Last update Sat Mar 30 14:58:49 2013 ivan ignatiev
 */
 
-#include <stdlib.h>
-#include "lemipc_structures.h"
+#include "random_move.h"
 
 int             count_player(int *around)
 {
