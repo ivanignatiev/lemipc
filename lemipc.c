@@ -1,13 +1,14 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Thu Mar 28 18:41:52 2013 ivan ignatiev
+** Last update Fri Mar 29 16:53:04 2013 vincent couvignou
 */
 
+#include <time.h>
 #include "lemipc.h"
 
 static t_fct_messages p_fct[NB_KIND];
