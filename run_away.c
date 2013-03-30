@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
-** Last update Sat Mar 30 14:57:21 2013 ivan ignatiev
+** Last update Sat Mar 30 16:29:38 2013 vincent couvignou
 */
 
 # include "run_away.h"
@@ -17,6 +17,9 @@ void		create_dfield(unsigned char *field,
   int		j;
   int		z;
 
+  i = 0;
+  j = 0;
+  z = 0;
   while (z < WIDTH * HEIGHT)
   {
     d_field[i][j] = field[z];
@@ -30,8 +33,9 @@ void		create_dfield(unsigned char *field,
     z++;
   }
 }
+
 int	count_ally(unsigned char d_field[HEIGHT][WIDTH],
-    int position_x, int position_y, int team_number)
+    	int position_x, int position_y, int team_number)
 {
   int	min_x;
   int	min_y;
@@ -195,7 +199,92 @@ int	go_right(t_player *player, unsigned char d_field[HEIGHT][WIDTH])
   return ((teams[player->team_id - 1] >= max_x) ? true : false);
 }
 
-int		run_away(t_player *player, unsigned char *field)
+static int		move_right(t_player *player, unsigned char *field,
+    			t_ipc_res *ipc_res)
+{
+  int			previous_sh_i;
+
+  previous_sh_i = player->sh_i;
+  lock_sem(ipc_res, player->sh_i);
+  field[player->sh_i] = 0;
+  unlock_sem(ipc_res, player->sh_i);
+  printf("Old[%d][%d]\t", player->x, player->y);
+  player->sh_i = get_shm_cell(player->x, player->y + 1, field);
+  player->y += 1;
+  printf("New[%d][%d]\n", player->x, player->y);
+  player->sh_i = get_shm_index(player->x, player->y);
+  lock_sem(ipc_res, previous_sh_i);
+  lock_sem(ipc_res, player->sh_i);
+  field[player->sh_i] = player->team_id;
+  unlock_sem(ipc_res, player->sh_i);
+  unlock_sem(ipc_res, previous_sh_i);
+  return (1);
+}
+
+static int		move_left(t_player *player, unsigned char *field,
+    			t_ipc_res *ipc_res)
+{
+  int			previous_sh_i;
+
+  previous_sh_i = player->sh_i;
+  printf("Old[%d][%d]\t", player->x, player->y);
+  player->sh_i = get_shm_cell(player->x, player->y - 1, field);
+  player->y -= 1;
+  printf("New[%d][%d]\n", player->x, player->y);
+  player->sh_i = get_shm_index(player->x, player->y);
+  lock_sem(ipc_res, previous_sh_i);
+  lock_sem(ipc_res, player->sh_i);
+  field[previous_sh_i] = 0;
+  field[player->sh_i] = player->team_id;
+  unlock_sem(ipc_res, player->sh_i);
+  unlock_sem(ipc_res, previous_sh_i);
+  return (1);
+}
+
+static int		move_up(t_player *player, unsigned char *field,
+    			t_ipc_res *ipc_res)
+{
+  int			previous_sh_i;
+
+  previous_sh_i = player->sh_i;
+  field[player->sh_i] = 0;
+  unlock_sem(ipc_res, player->sh_i);
+  printf("Old[%d][%d]\t", player->x, player->y);
+  player->sh_i = get_shm_cell(player->x - 1, player->y, field);
+  player->x -= 1;
+  printf("New[%d][%d]\n", player->x, player->y);
+  player->sh_i = get_shm_index(player->x, player->y);
+  lock_sem(ipc_res, previous_sh_i);
+  lock_sem(ipc_res, player->sh_i);
+  field[player->sh_i] = player->team_id;
+  unlock_sem(ipc_res, player->sh_i);
+  unlock_sem(ipc_res, previous_sh_i);
+  return (1);
+}
+
+static int		move_down(t_player *player, unsigned char *field,
+    			t_ipc_res *ipc_res)
+{
+  int			previous_sh_i;
+
+  previous_sh_i = player->sh_i;
+  field[player->sh_i] = 0;
+  unlock_sem(ipc_res, player->sh_i);
+  printf("Old[%d][%d]\t", player->x, player->y);
+  player->sh_i = get_shm_cell(player->x + 1, player->y, field);
+  player->x += 1;
+  printf("New[%d][%d]\n", player->x, player->y);
+  player->sh_i = get_shm_index(player->x, player->y);
+  lock_sem(ipc_res, previous_sh_i);
+  lock_sem(ipc_res, player->sh_i);
+  field[player->sh_i] = player->team_id;
+  unlock_sem(ipc_res, player->sh_i);
+  unlock_sem(ipc_res, previous_sh_i);
+  return (1);
+}
+
+int		run_away(t_player *player, unsigned char *field,
+    			t_ipc_res *ipc_res)
 {
   unsigned char	d_field[HEIGHT][WIDTH];
   int		nb_allies;
@@ -206,13 +295,14 @@ int		run_away(t_player *player, unsigned char *field)
   nb_ennemies = count_ennemy(d_field, player->x, player->y, player->team_id);
   if (nb_allies > nb_ennemies)
     return (0);
+  printf("team_id[%d]\tnb_allies[%d]\tnb_ennemies[%d]\n", player->team_id, nb_allies, nb_ennemies);
   if (go_up(player, d_field) && player->x - 1 > 0)
-    return (1);
+    return (move_up(player, field, ipc_res));
   else if (go_right(player, d_field) && player->y + 1 < WIDTH)
-    return (1);
+    return (move_right(player, field, ipc_res));
   else if (go_left(player, d_field) && player->y - 1 > 0)
-    return (1);
+    return (move_left(player, field, ipc_res));
   else if (go_down(player, d_field) && player->x + 1 < HEIGHT)
-    return (1);
+    return (move_down(player, field, ipc_res));
   return (0);
 }
