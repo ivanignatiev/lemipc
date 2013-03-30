@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 19:55:03 2013 ivan ignatiev
+** Last update Sat Mar 30 20:39:36 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>
@@ -55,9 +55,13 @@ void		display_field(t_ipc_res *ipc_res, unsigned char *field)
   while (i < WIDTH * HEIGHT)
     {
       lock_sem(ipc_res, i);
+      if (field[i])
+	attron(A_BOLD);
       attron(COLOR_PAIR(field[i]));
       printw("%3u", field[i]);
       attroff(COLOR_PAIR(field[i]));
+      if (field[i])
+	attroff(A_BOLD);
       unlock_sem(ipc_res, i);
       if ((i + 1) % WIDTH == 0)
 	printw("\n");
