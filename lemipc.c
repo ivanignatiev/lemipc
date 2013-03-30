@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 20:24:30 2013 ivan ignatiev
+** Last update Sat Mar 30 20:27:00 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -308,7 +308,7 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
 
       if (!run_away(player, field, ipc_res))
       {
-//	printf("Random move %d[%d]!!\n", player->team_id, player->num);
+	printf("Random move %d[%d]!!\n", player->team_id, player->num);
 	random_move(player, field, ipc_res);
       }
  //     else
