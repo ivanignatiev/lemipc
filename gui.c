@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 19:18:18 2013 ivan ignatiev
+** Last update Sat Mar 30 19:55:03 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>
@@ -75,6 +75,7 @@ void		clear_ressources(t_ipc_res *ipc_res)
 int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
 {
   char c;
+  int   capture;
 
   initscr();
   cbreak();
@@ -82,10 +83,12 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
   noecho();
   init_colors();
   timeout(1);
+  capture = 0;
   while (1)
   {
     clear();
     display_field(ipc_res, field);
+    printw("%d\n", capture);
     c = getch();
     if (c == 'q')
       {
@@ -93,6 +96,7 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
 	endwin();
 	return (EXIT_SUCCESS);
       }
+    capture = capture + 1;
     sleep(1);
     refresh();
   }

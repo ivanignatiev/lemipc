@@ -1,11 +1,11 @@
 /*
-** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 18:29:35 2013 vincent couvignou
+** Last update Sat Mar 30 20:24:30 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -155,20 +155,22 @@ void		place_player(t_ipc_res *ipc_res, t_player *player,
 			     unsigned char *field)
 {
   char		move_msg[100];
+  int           sh_i;
 
-  clear_player(ipc_res, player, field);
   player->x = rand() % WIDTH;
   player->y = rand() % HEIGHT;
-  player->sh_i = get_shm_index(player->x, player->y);
-  while (field[player->sh_i] != 0 && semctl(ipc_res->sem_id, player->sh_i, GETVAL) > 0)
+  sh_i = get_shm_index(player->x, player->y);
+  while (field[sh_i] != 0 && semctl(ipc_res->sem_id, sh_i, GETVAL) > 0)
     {
       player->x = rand() % WIDTH;
       player->y = rand() % HEIGHT;
-      player->sh_i = get_shm_index(player->x, player->y);
+      sh_i = get_shm_index(player->x, player->y);
     }
-  lock_sem(ipc_res, player->sh_i);
+  clear_player(ipc_res, player, field);
+  lock_sem(ipc_res, sh_i);
+  player->sh_i = sh_i;
   field[player->sh_i] = player->team_id;
-  unlock_sem(ipc_res, player->sh_i);
+  unlock_sem(ipc_res, sh_i);
   sprintf(move_msg, "MOVE:%d:%d:%d:%d", player->num, player->x, player->y, player->sh_i);
   send_msg_to_team(ipc_res, player, count_players_in_team(ipc_res, player, field), move_msg);
 }
@@ -256,6 +258,7 @@ int		player_preplace(t_ipc_res *ipc_res, t_player *player,
   printf("PLAYER NUM : %d\n", player->num);
   sprintf(present_msg, "NEWP:%d", player->num);
   send_msg_to_team(ipc_res, player, count_players_in_team(ipc_res, player, field) + 1, present_msg);
+  srand(time(NULL) + player->num);
   place_player(ipc_res, player, field);
   return (1);
 }
@@ -302,6 +305,7 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
   printf("Battle begun!\n");
   while (1)
     {
+
       if (!run_away(player, field, ipc_res))
       {
 //	printf("Random move %d[%d]!!\n", player->team_id, player->num);
@@ -417,7 +421,6 @@ int		main(int argc, char **argv)
       return (EXIT_FAILURE);
     }
   player.player_list = new_list_default();
-  srand(time(NULL));
   player.team_id = atoi(argv[1]);
   player.sh_i = -1;
   if ((pwd = getenv("PWD")) == NULL)
