@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 18:29:35 2013 vincent couvignou
+** Last update Sat Mar 30 20:18:42 2013 vincent couvignou
 */
 
 #include	"lemipc.h"
@@ -280,7 +280,7 @@ int		player_die(t_ipc_res *ipc_res, t_player *player,
       clear_ressources(ipc_res);
       return (1);
     }
-  else if (cnt_pl_in_team == 1)
+  else if (cnt_pl_in_team == 10)
     {
       printf("I can't kill them, because I'm single I've just kill my self.\n");
       clear_player(ipc_res, player, field);
@@ -304,7 +304,7 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
     {
       if (!run_away(player, field, ipc_res))
       {
-//	printf("Random move %d[%d]!!\n", player->team_id, player->num);
+	printf("Random move %d[%d]!!\n", player->team_id, player->num);
 	random_move(player, field, ipc_res);
       }
  //     else
