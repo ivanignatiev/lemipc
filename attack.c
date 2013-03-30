@@ -5,11 +5,12 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Sat Mar 30 13:42:17 2013 vincent couvignou
-** Last update Sat Mar 30 14:46:39 2013 vincent couvignou
+** Last update Sat Mar 30 18:35:18 2013 vincent couvignou
 */
 
 #include <math.h>
 #include "lemipc_structures.h"
+#include "run_away.h"
 
 #define ATK_RANGE	4
 
@@ -113,12 +114,10 @@ int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player)
   return (0);
 }
 
-int		attack(t_player *player, unsigned char *field)
+int		attack(t_player *player, unsigned char *field, t_ipc_res *ipc)
 {
   unsigned char	d_field[HEIGHT][WIDTH];
-  int		nb_allies;
-  int		nb_ennemies;
 
-  create_dfield(field, d_field);
+  create_dfield(field, d_field, ipc);
   return (find_ennemy(d_field, player));
 }

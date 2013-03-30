@@ -1,11 +1,11 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 17:18:02 2013 ivan ignatiev
+** Last update Sat Mar 30 18:29:35 2013 vincent couvignou
 */
 
 #include	"lemipc.h"
@@ -83,6 +83,7 @@ int		send_message_to_player(t_ipc_res *ipc_res, t_player *player,
 {
   t_msg		snd_msg;
 
+  (void)player;
   bzero(&snd_msg, sizeof(t_msg));
   strcpy(snd_msg.msg, msg);
   snd_msg.mtype = player_num;
@@ -107,7 +108,6 @@ void		lock_sem(t_ipc_res *ipc_res, int i)
 void		unlock_sem(t_ipc_res *ipc_res, int i)
 {
   struct sembuf	sem;
-  int		avsem;
 
   sem.sem_num = i;
   sem.sem_flg = 0;
@@ -191,7 +191,7 @@ int		count_aliens(int my_team, int *around)
 	  j = j + 1;
 	}
       if (count >= 2)
-	return (1);
+	return (around[i]);
       i = i + 1;
     }
   return (0);
@@ -201,6 +201,7 @@ int		player_kill(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
 {
   int		around[8];
   char		die_msg[100];
+  int		debug_kill;
 
   around[0] = get_shm_cell(ipc_res, player->x - 1, player->y - 1, field);
   around[1] = get_shm_cell(ipc_res, player->x, player->y - 1, field);
@@ -210,12 +211,12 @@ int		player_kill(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
   around[5] = get_shm_cell(ipc_res, player->x - 1, player->y + 1, field);
   around[6] = get_shm_cell(ipc_res, player->x, player->y + 1, field);
   around[7] = get_shm_cell(ipc_res, player->x + 1, player->y + 1, field);
-  if (count_aliens(player->team_id, around))
+  if ((debug_kill = count_aliens(player->team_id, around)))
     {
       clear_player(ipc_res, player, field);
       sprintf(die_msg, "DIEP:%d", player->num);
       send_msg_to_team(ipc_res, player, count_players_in_team(ipc_res, player, field), die_msg);
-      printf("They killed me!\n");
+      printf("\n!!!!! They killed me[%d] !!!!! \n", debug_kill);
       return (1);
     }
   return (0);
@@ -274,7 +275,7 @@ int		player_die(t_ipc_res *ipc_res, t_player *player,
   cnt_pl =  count_players(ipc_res, field);
   if (cnt_pl_in_team == cnt_pl)
     {
-      printf("Team %d won!\n", player->team_id);
+      printf("Team %ld won!\n", player->team_id);
       clear_player(ipc_res, player, field);
       clear_ressources(ipc_res);
       return (1);
@@ -303,11 +304,11 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
     {
       if (!run_away(player, field, ipc_res))
       {
-	printf("Random move %d[%d]!!\n", player->team_id, player->num);
+//	printf("Random move %d[%d]!!\n", player->team_id, player->num);
 	random_move(player, field, ipc_res);
       }
-      else
-	printf("Run away %d[%d]!!\n", player->team_id, player->num);
+ //     else
+//	printf("Run away %d[%d]!!\n", player->team_id, player->num);
       if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg, p_fct);
       else if (msg_size == -1 && errno != ENOMSG)
@@ -324,7 +325,6 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
 
 int		battle_begini_ctl(t_ipc_res *ipc_res, unsigned char *field)
 {
-  t_msg		recv_msg;
   int		i;
 
   i = FIGTH_TIMEOUT;
@@ -360,7 +360,6 @@ void		sems_init(t_ipc_res *ipc_res)
 
 int		master_process(t_ipc_res *ipc_res, t_player *player)
 {
-  char		c;
   unsigned char	*field;
 
   if ((field = (unsigned char*)shmat(ipc_res->field_id, NULL, SHM_R | SHM_W)) == NULL)

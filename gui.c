@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 19:15:57 2013 ivan ignatiev
+** Last update Sat Mar 30 19:18:18 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>
@@ -25,7 +25,6 @@ void		lock_sem(t_ipc_res *ipc_res, int i)
 void		unlock_sem(t_ipc_res *ipc_res, int i)
 {
   struct sembuf	sem;
-  int		avsem;
 
   sem.sem_num = i;
   sem.sem_flg = 0;
@@ -87,7 +86,8 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
   {
     clear();
     display_field(ipc_res, field);
-    if (getch() == 'q')
+    c = getch();
+    if (c == 'q')
       {
         clear_ressources(ipc_res);
 	endwin();
@@ -106,7 +106,7 @@ void		ressources_info(t_ipc_res *ipc_res)
 }
 
 
-int		main(int argc, char **argv)
+int		main()
 {
   key_t		key;
   t_ipc_res	ipc_res;

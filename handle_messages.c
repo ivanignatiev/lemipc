@@ -5,10 +5,11 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Fri Mar 29 11:47:10 2013 vincent couvignou
+** Last update Sat Mar 30 18:31:09 2013 vincent couvignou
 */
 
 #include "handle_messages.h"
+#include "lemipc.h"
 
 void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
@@ -29,12 +30,13 @@ void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
-void	oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+void			oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
-  int	player_num;
+  int			player_num;
   t_player_list		*newp;
-  char	resp[MESSAGE_SIZE];
+  char			resp[MESSAGE_SIZE];
 
+  (void)ipc_res;
 if ((newp = malloc(sizeof(*newp))) == NULL)
     return ;
   sscanf(msg, "OLDP:%d", &player_num);
@@ -52,6 +54,7 @@ void	move_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   int	player_num;
   char	resp[MESSAGE_SIZE];
 
+  (void)ipc_res;
   sscanf(msg, "MOVE:%d", &player_num);
   sprintf(resp, "MOVE:%d", player->num);
   /* Find where to move and move one case... */
@@ -64,6 +67,7 @@ void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   t_my_item	tmp;
   t_player_list	*tmp_player;
 
+  (void)ipc_res;
   tmp_player = NULL;
   sscanf(msg, "DIEP:%d", &player_num);
   sprintf(resp, "DIEP:%d", player->num);

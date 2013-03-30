@@ -1,11 +1,11 @@
 ##
-## Makefile for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+## Makefile for lemipc in /home/ignati_i/projects/lemipc
 ##
 ## Made by ivan ignatiev
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sat Mar 30 18:35:53 2013 ivan ignatiev
+## Last update Sat Mar 30 19:17:30 2013 ivan ignatiev
 ##
 
 
@@ -24,7 +24,7 @@ NAME 	= 	lemipc
 GNAME	=	gui
 
 CFLAGS  += 	-I./LinkedList
-CFLAGS 	+= 	-W -Wextra
+CFLAGS 	+= 	-Wall -Wextra
 
 OBJS 	=	$(SRCS:.c=.o)
 GOBJS 	=	$(GSRCS:.c=.o)

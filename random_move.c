@@ -5,10 +5,12 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 16:46:11 2013 vincent couvignou
-** Last update Sat Mar 30 16:17:49 2013 vincent couvignou
+** Last update Sat Mar 30 18:47:20 2013 vincent couvignou
 */
 
 #include "random_move.h"
+#include "run_away.h"
+#include "lemipc.h"
 
 int             count_player(int *around)
 {
@@ -22,37 +24,40 @@ int             count_player(int *around)
   return (count);
 }
 
-void	move(unsigned char *field, t_player *player,
+void	move_r(unsigned char *field, t_player *player,
     	t_ipc_res *ipc_res, int *around)
 {
   int	p_case;
+  int	previous_sh_i;
 
-  printf("Random move[move]\n");
   p_case = rand() % 8;
-  lock_sem(ipc_res, player->sh_i);
-  field[player->sh_i] = 0;
-  unlock_sem(ipc_res, player->sh_i);
+  previous_sh_i = player->sh_i;
+  while (around[p_case] < 0 || field[around[p_case]] != 0)
+    p_case = rand() % 8;
   player->sh_i = around[p_case];
   player->x = around[p_case] / HEIGHT;
   player->y = around[p_case] % HEIGHT;
+  lock_sem(ipc_res, previous_sh_i);
   lock_sem(ipc_res, player->sh_i);
+  field[previous_sh_i] = 0;
   field[player->sh_i] = player->team_id;
+  unlock_sem(ipc_res, previous_sh_i);
   unlock_sem(ipc_res, player->sh_i);
 }
 
 bool	test_move(unsigned char *field, t_player *player,
     		t_ipc_res *ipc_res, int *around)
 {
-  char          die_msg[100];
-
-  around[0] =  get_shm_cell(player->x - 1, player->y - 1, field);
-  around[1] =  get_shm_cell(player->x, player->y - 1, field);
-  around[2] =  get_shm_cell(player->x + 1, player->y - 1, field);
-  around[3] =  get_shm_cell(player->x - 1, player->y, field);
-  around[4] =  get_shm_cell(player->x + 1, player->y, field);
-  around[5] =  get_shm_cell(player->x - 1, player->y + 1, field);
-  around[6] =  get_shm_cell(player->x, player->y + 1, field);
-  around[7] =  get_shm_cell(player->x + 1, player->y + 1, field);
+  (void)field;
+  (void)ipc_res;
+  around[0] =  get_shm_index(player->x - 1, player->y - 1);
+  around[1] =  get_shm_index(player->x, player->y - 1);
+  around[2] =  get_shm_index(player->x + 1, player->y - 1);
+  around[3] =  get_shm_index(player->x - 1, player->y);
+  around[4] =  get_shm_index(player->x + 1, player->y);
+  around[5] =  get_shm_index(player->x - 1, player->y + 1);
+  around[6] =  get_shm_index(player->x, player->y + 1);
+  around[7] =  get_shm_index(player->x + 1, player->y + 1);
   if (count_player(around) < 8)
     return (true);
   return (false);
@@ -64,9 +69,9 @@ int			random_move(t_player *player, unsigned char *field,
   unsigned char	d_field[HEIGHT][WIDTH];
   int           around[8];
 
-  create_dfield(d_field);
+  create_dfield(field, d_field, ipc_res);
   if (test_move(field, player, ipc_res, around) == false)
     return (1);
-  move(field, player, ipc_res, around);
+  move_r(field, player, ipc_res, around);
   return (1);
 }

@@ -26,7 +26,7 @@
 # define WIDTH                  10
 # define HEIGHT                 10
 # define MAX_TEAM_NUM           10
-# define FIGTH_TIMEOUT          10
+# define FIGTH_TIMEOUT          5
 # define AVAILBL_PLACES_SEM     (WIDTH * HEIGHT)
 
 typedef struct	s_ipc_res
