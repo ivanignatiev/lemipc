@@ -1,16 +1,16 @@
 /*
-** gui.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** gui.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 18:34:48 2013 vincent couvignou
+** Last update Sat Mar 30 19:18:18 2013 ivan ignatiev
 */
 
+#include	<ncurses.h>
 #include	"lemipc.h"
 #include	"lemipc_structures.h"
-
 
 void		lock_sem(t_ipc_res *ipc_res, int i)
 {
@@ -32,6 +32,21 @@ void		unlock_sem(t_ipc_res *ipc_res, int i)
   semop(ipc_res->sem_id, &sem, 1);
 }
 
+void		init_colors()
+{
+  start_color();
+  init_pair(0, COLOR_WHITE, COLOR_BLACK);
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+  init_pair(5, COLOR_BLUE, COLOR_BLACK);
+  init_pair(6, COLOR_BLACK, COLOR_WHITE);
+  init_pair(7, COLOR_YELLOW, COLOR_RED);
+  init_pair(8, COLOR_WHITE, COLOR_GREEN);
+  init_pair(9, COLOR_BLUE, COLOR_YELLOW);
+}
+
 void		display_field(t_ipc_res *ipc_res, unsigned char *field)
 {
   int		i;
@@ -40,10 +55,12 @@ void		display_field(t_ipc_res *ipc_res, unsigned char *field)
   while (i < WIDTH * HEIGHT)
     {
       lock_sem(ipc_res, i);
-      printf("%u ", field[i]);
+      attron(COLOR_PAIR(field[i]));
+      printw("%3u", field[i]);
+      attroff(COLOR_PAIR(field[i]));
       unlock_sem(ipc_res, i);
       if ((i + 1) % WIDTH == 0)
-	printf("\n");
+	printw("\n");
       i = i + 1;
     }
 }
@@ -59,16 +76,25 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
 {
   char c;
 
+  initscr();
+  cbreak();
+  keypad(stdscr, TRUE);
+  noecho();
+  init_colors();
+  timeout(1);
   while (1)
   {
+    clear();
     display_field(ipc_res, field);
-    read(1, &c, 1);
+    c = getch();
     if (c == 'q')
-    {
-      clear_ressources(ipc_res);
-      return (EXIT_SUCCESS);
-    }
-    read(1, &c, 1);
+      {
+        clear_ressources(ipc_res);
+	endwin();
+	return (EXIT_SUCCESS);
+      }
+    sleep(1);
+    refresh();
   }
 }
 
