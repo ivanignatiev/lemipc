@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sun Mar 31 16:34:18 2013 ivan ignatiev
+** Last update Sun Mar 31 18:29:26 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>
@@ -52,6 +52,8 @@ void		display_field(WINDOW *win, t_ipc_res *ipc_res,
 {
   int		i;
 
+  wclear(win);
+  wprintw(win, "\n");
   i = 0;
   while (i < WIDTH * HEIGHT)
     {
@@ -68,6 +70,8 @@ void		display_field(WINDOW *win, t_ipc_res *ipc_res,
 	wprintw(win, "\n");
       i = i + 1;
     }
+  wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+  wrefresh(win);
 }
 
 void		clear_ressources(t_ipc_res *ipc_res)
@@ -87,7 +91,7 @@ WINDOW		*init_filed_window(void)
   noecho();
   init_colors();
   timeout(1);
-  win = newwin(12, 32, 10, 10);
+  win = newwin(WIDTH + 2, HEIGHT * 3 + 2, 0, 0);
   return (win);
 }
 
@@ -102,25 +106,21 @@ int		gui_field(t_ipc_res *ipc_res,
 {
   char		key;
   int		capture;
-  WINDOW	*win;
+  WINDOW	*win_field;
 
-  win = init_filed_window();
+  win_field = init_filed_window();
   capture = 0;
   while (1)
   {
-    wclear(win);
-    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
-    display_field(win, ipc_res, field);
-    wprintw(win, "%d\n", capture);
+    display_field(win_field, ipc_res, field);
     key = getch();
     if (key == 'q')
       {
         clear_ressources(ipc_res);
-	destroy_field_window(win);
+	destroy_field_window(win_field);
 	return (EXIT_SUCCESS);
       }
     capture = capture + 1;
-    wrefresh(win);
     sleep(1);
   }
 }

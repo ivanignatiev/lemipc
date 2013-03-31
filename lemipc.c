@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sun Mar 31 18:10:42 2013 ivan ignatiev
+** Last update Sun Mar 31 18:30:43 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -217,9 +217,8 @@ int		player_kill(t_ipc_res *ipc_res, t_player *player,
     {
       clear_player(ipc_res, player, field);
       sprintf(die_msg, "DIEP:%d", player->num);
-      if (count_players_in_team(ipc_res, player, field) == 1)
-	send_msg_to_team(ipc_res, player,
-	  count_players_in_team(ipc_res, player, field), die_msg);
+      send_msg_to_team(ipc_res, player,
+		       count_players_in_team(ipc_res, player, field), die_msg);
       printf("Player %d : Team %d killed me !!!!! \n", player->num, kill_team);
       return (1);
     }
