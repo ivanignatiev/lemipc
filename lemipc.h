@@ -1,11 +1,11 @@
 /*
-** lemipc.h for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.h for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Tue Mar 26 14:17:37 2013 ivan ignatiev
-** Last update Sun Mar 31 19:34:58 2013 ivan ignatiev
+** Last update Sun Mar 31 21:19:58 2013 vincent couvignou
 */
 
 #ifndef LEMIPC_H_
@@ -26,7 +26,6 @@ int		count_aliens(int my_team, int *around);
 int		get_shm_cell(t_ipc_res *ipc_res, int x, int y,
 			     unsigned char *field);
 int		get_shm_index(int, int);
-
 
 int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player,
 				 int count, const char *msg);

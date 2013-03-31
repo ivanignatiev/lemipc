@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Sat Mar 30 13:42:17 2013 vincent couvignou
-** Last update Sun Mar 31 19:25:34 2013 vincent couvignou
+** Last update Sun Mar 31 21:18:41 2013 vincent couvignou
 */
 
 #include <math.h>
@@ -60,12 +60,11 @@ static int	attack_ennemy(int range_player, t_player *player,
   change_position(player, player->x, player->y + 1);
   if (range_player >= range(player, min_x, min_y))
     return (1);
-  printf("No position...\n");
   return (1);
 }
 
-static int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
-    			t_ipc_res *ipc_res)
+static int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH],
+    t_player *player, t_ipc_res *ipc_res)
 {
   int		min_x;
   int		min_y;

@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
-** Last update Sun Mar 31 19:38:19 2013 vincent couvignou
+** Last update Sun Mar 31 21:22:59 2013 vincent couvignou
 */
 
 #include "run_away.h"
@@ -15,7 +15,6 @@
 #include "create_field.h"
 
 int  (*t_fct[4])();
-
 
 int	count_ally(unsigned char d_field[HEIGHT][WIDTH],
     	int position_x, int position_y, int team_number)
@@ -78,10 +77,8 @@ int	count_ennemy(unsigned char d_field[HEIGHT][WIDTH],
   return (max_tab(teams, team_number));
 }
 
-
-
-bool		test_random(t_player *player, unsigned char *field, t_ipc_res *ipc_res,
-    unsigned char d_field[HEIGHT][WIDTH])
+bool		test_random(t_player *player, unsigned char *field,
+    t_ipc_res *ipc_res, unsigned char d_field[HEIGHT][WIDTH])
 
 {
   int		i;
