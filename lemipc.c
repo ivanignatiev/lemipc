@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sun Mar 31 19:43:35 2013 vincent couvignou
+** Last update Sun Mar 31 20:38:41 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -13,31 +13,27 @@
 int		die_process(t_ipc_res * ipc_res, t_player *player)
 {
   t_msg		ipc_msg;
-  int		msg_size;
 
   while (1)
     {
-      if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) < 0
+      if (recv_msg_from_team(ipc_res, player, &ipc_msg) < 0
 	  && errno != ENOMSG)
-	{
-	  printf("Player %d : Game over!\n", player->num);
-	  return (EXIT_SUCCESS);
-	}
+	return (EXIT_SUCCESS);
     }
   return (EXIT_SUCCESS);
 }
 
-int			slave_process(t_ipc_res *ipc_res, t_player *player,
-				      t_uchar *field)
+int		slave_process(t_ipc_res *ipc_res, t_player *player,
+			      t_uchar *field)
 {
-  t_msg			ipc_msg;
-  int			msg_size;
-  t_fct_messages	p_fct[NB_KIND];
+  t_msg		ipc_msg;
+  int		msg_size;
+  t_fct_msgs	p_fct[NB_KIND];
 
   init_fct(p_fct);
-  printf("Player %d : Waiting for battle!\n", player->num);
+  send_msg_to_gui(ipc_res, player, "Waiting for battle!");
   lock_sem(ipc_res, AVAILBL_PLACES_SEM);
-  printf("Player %d : Battle begun!\n", player->num);
+  send_msg_to_gui(ipc_res, player, "Battle begun!");
   while (1)
     {
       if (!attack(player, field, ipc_res) || !run_away(player, field, ipc_res))
@@ -45,13 +41,11 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
       if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg, p_fct);
       else if (msg_size == -1 && errno != ENOMSG)
-	{
-	  printf("Player %d : Game over!\n", player->num);
-	  return (EXIT_SUCCESS);
-	}
+	return (EXIT_SUCCESS);
       if (player_die(ipc_res, player, field))
 	return (die_process(ipc_res, player));
-      sleep(2);
+      send_msg_to_gui(ipc_res, player, "UPDATE");
+      sleep(1);
     }
   return (EXIT_SUCCESS);
 }
@@ -67,9 +61,8 @@ int		master_process(t_ipc_res *ipc_res, t_player *player)
   sems_init(ipc_res);
   ressources_info(ipc_res);
   if (!player_preplace(ipc_res, player, field)
-      || !battle_begini_ctl(ipc_res, field))
+      || !battle_begini_ctl(ipc_res, player, field))
     {
-      printf("Game can't begin!\n");
       clear_ressources(ipc_res);
       return (EXIT_FAILURE);
     }

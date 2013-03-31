@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Sun Mar 31 18:37:23 2013 vincent couvignou
+** Last update Sun Mar 31 20:37:25 2013 ivan ignatiev
 */
 
 #include "handle_messages.h"
@@ -21,8 +21,7 @@ void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   sscanf(msg, "NEWP:%d:%d:%d",
         &newp->player_number, &newp->player_x, &newp->player_y);
   sprintf(resp, "OLDP:%d:%d:%d", player->num, player->x, player->y);
-  send_message_to_player(ipc_res, player, newp->player_number, resp);
-  printf("New player came to our team (%d)!\n", newp->player_number);
+  send_msg_to_player(ipc_res, player, newp->player_number, resp);
   newp->activated = true;
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
@@ -36,7 +35,6 @@ void			oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
     return ;
   sscanf(msg, "OLDP:%d:%d:%d",
       &newp->player_number, &newp->player_x, &newp->player_y);
-  printf("Old player %d\n", newp->player_number);
   newp->activated = true;
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
@@ -76,7 +74,7 @@ void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   }
 }
 
-void	init_fct(t_fct_messages *fct_array)
+void	init_fct(t_fct_msgs *fct_array)
 {
   int	i;
 

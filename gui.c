@@ -5,47 +5,10 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sun Mar 31 19:23:21 2013 vincent couvignou
+** Last update Sun Mar 31 21:31:16 2013 ivan ignatiev
 */
 
-#include	<ncurses.h>
-#include	"lemipc.h"
-#include	"lemipc_structures.h"
-
-void		lock_sem(t_ipc_res *ipc_res, int i)
-{
-  struct sembuf	sem;
-
-  sem.sem_num = i;
-  sem.sem_flg = 0;
-  sem.sem_op = -1;
-  semop(ipc_res->sem_id, &sem, 1);
-}
-
-void		unlock_sem(t_ipc_res *ipc_res, int i)
-{
-  struct sembuf	sem;
-
-  sem.sem_num = i;
-  sem.sem_flg = 0;
-  sem.sem_op = 1;
-  semop(ipc_res->sem_id, &sem, 1);
-}
-
-void		init_colors()
-{
-  start_color();
-  init_pair(0, COLOR_WHITE, COLOR_BLACK);
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-  init_pair(2, COLOR_GREEN, COLOR_BLACK);
-  init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(4, COLOR_CYAN, COLOR_BLACK);
-  init_pair(5, COLOR_BLUE, COLOR_BLACK);
-  init_pair(6, COLOR_BLACK, COLOR_WHITE);
-  init_pair(7, COLOR_YELLOW, COLOR_RED);
-  init_pair(8, COLOR_WHITE, COLOR_GREEN);
-  init_pair(9, COLOR_BLUE, COLOR_YELLOW);
-}
+#include	"gui.h"
 
 void		display_field(WINDOW *win, t_ipc_res *ipc_res,
 			      unsigned char *field)
@@ -75,31 +38,30 @@ void		display_field(WINDOW *win, t_ipc_res *ipc_res,
   wrefresh(win);
 }
 
-void		clear_ressources(t_ipc_res *ipc_res)
+int		gui_getmessages(WINDOW *win, WINDOW *win_field,
+				t_ipc_res *ipc_res, unsigned char *field)
 {
-  shmctl(ipc_res->field_id, IPC_RMID, NULL);
-  semctl(ipc_res->sem_id, 0, IPC_RMID, NULL);
-  msgctl(ipc_res->msg_id, IPC_RMID, NULL);
-}
+  t_msg		ipc_msg;
+  int		msg_size;
+  int		i;
 
-WINDOW		*init_filed_window(void)
-{
-  WINDOW	*win;
-
-  initscr();
-  cbreak();
-  keypad(stdscr, TRUE);
-  noecho();
-  init_colors();
-  timeout(1);
-  win = newwin(WIDTH + 2, HEIGHT * 3 + 2, 0, 0);
-  return (win);
-}
-
-void		destroy_field_window(WINDOW *win)
-{
-  delwin(win);
-  endwin();
+  i = 0;
+  while ((msg_size = msgrcv(ipc_res->msg_id, (void*)&ipc_msg,
+			    sizeof(t_msg), GUI_MSG_TYPE, IPC_NOWAIT)) > 0)
+    {
+      if (strcmp(ipc_msg.msg, "UPDATE") != 0)
+	wprintw(win, " Player %d : %s\n", ipc_msg.sender, ipc_msg.msg);
+      i = i + 1;
+    }
+  if (msg_size == -1 && errno != ENOMSG)
+    return (-1);
+  if (i)
+    {
+      display_field(win_field, ipc_res, field);
+      wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+      wrefresh(win);
+    }
+  return (i);
 }
 
 int		gui_field(t_ipc_res *ipc_res,
@@ -108,31 +70,26 @@ int		gui_field(t_ipc_res *ipc_res,
   char		key;
   int		capture;
   WINDOW	*win_field;
+  WINDOW	*win_msg;
 
   win_field = init_filed_window();
+  win_msg = init_msg_window();
   capture = 0;
   while (1)
   {
-    display_field(win_field, ipc_res, field);
     key = getch();
-    if (key == 'q')
+    if (key == 'q'
+	|| gui_getmessages(win_msg, win_field, ipc_res, field) == -1)
       {
         clear_ressources(ipc_res);
-	destroy_field_window(win_field);
+	destroy_window(win_field);
+	destroy_window(win_msg);
 	return (EXIT_SUCCESS);
       }
     capture = capture + 1;
-    sleep(1);
   }
+  return (EXIT_FAILURE);
 }
-
-void		ressources_info(t_ipc_res *ipc_res)
-{
-  printf("FIELD ID : %d\n", ipc_res->field_id);
-  printf("SEM ID : %d\n", ipc_res->sem_id);
-  printf("MSG ID : %d\n", ipc_res->msg_id);
-}
-
 
 int		main()
 {

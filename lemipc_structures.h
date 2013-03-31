@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:26:00 2013 vincent couvignou
-** Last update Sun Mar 31 19:02:58 2013 ivan ignatiev
+** Last update Sun Mar 31 20:28:11 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_STRUCTURES_H_
@@ -18,6 +18,7 @@
 # include <sys/types.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <stdarg.h>
 # include <string.h>
 # include <unistd.h>
 # include <errno.h>
@@ -30,6 +31,7 @@
 # define AVAILBL_PLACES_SEM     (WIDTH * HEIGHT)
 # define SHM_MASTER		IPC_CREAT | SHM_R | SHM_W
 # define SHM_SLAVE		SHM_R | SHM_W
+# define GUI_MSG_TYPE		2
 
 typedef struct	s_ipc_res
 {
@@ -59,6 +61,7 @@ typedef struct	s_player
 typedef struct	s_msg
 {
   long		mtype;
+  long		sender;
   char		msg[255];
 }		t_msg;
 

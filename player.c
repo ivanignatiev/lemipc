@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sun Mar 31 19:25:31 2013 ivan ignatiev
-** Last update Sun Mar 31 19:26:31 2013 ivan ignatiev
+** Last update Sun Mar 31 20:27:02 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -63,7 +63,7 @@ int		player_kill(t_ipc_res *ipc_res, t_player *player,
       sprintf(die_msg, "DIEP:%d", player->num);
       send_msg_to_team(ipc_res, player,
 		       count_players_in_team(ipc_res, player, field), die_msg);
-      printf("Player %d : Team %d killed me !!!!! \n", player->num, kill_team);
+      send_msg_to_gui(ipc_res, player, "Team %d killed me !", kill_team);
       return (1);
     }
   return (0);
@@ -79,7 +79,7 @@ int		player_preplace(t_ipc_res *ipc_res, t_player *player,
   if (player->num >= MAX_TEAM_NUM
       || count_players(ipc_res, field) >= (WIDTH * HEIGHT) / 2)
     {
-      fprintf(stderr, "You're late, team doesn't love you -21\n");
+      fprintf(stderr, "You're late!\n");
       return (0);
     }
   player->num += (player->team_id * MAX_TEAM_NUM);
@@ -89,6 +89,7 @@ int		player_preplace(t_ipc_res *ipc_res, t_player *player,
   send_msg_to_team(ipc_res, player,
 		   count_players_in_team(ipc_res, player, field) + 1,
 		   present_msg);
+  send_msg_to_gui(ipc_res, player, "In game!");
   srand(time(NULL) + player->num);
   return (1);
 }
@@ -102,19 +103,18 @@ int		player_die(t_ipc_res *ipc_res, t_player *player,
   cnt_pl_in_team = count_players_in_team(ipc_res, player, field) + 1;
   cnt_pl =  count_players(ipc_res, field);
   if (cnt_pl_in_team == cnt_pl)
-  {
-      printf("Player %d : Team %ld won!\n", player->num, player->team_id);
+    {
+      send_msg_to_gui(ipc_res, player, "Team %ld won!", player->team_id);
       clear_player(ipc_res, player, field);
       clear_ressources(ipc_res);
       return (1);
-  }
+    }
   if (cnt_pl_in_team <= 1)
-  {
-    printf("Player %d : I can't kill them, because I'm single"
-        " I've just kill my self.\n", player->num);
-    clear_player(ipc_res, player, field);
-    return (1);
-  }
+    {
+      send_msg_to_gui(ipc_res, player, "I am single, I have to kill myself!");
+      clear_player(ipc_res, player, field);
+      return (1);
+    }
   if (player_kill(ipc_res, player, field))
     return (1);
   return (0);

@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sun Mar 31 19:22:15 2013 ivan ignatiev
-** Last update Sun Mar 31 19:23:40 2013 ivan ignatiev
+** Last update Sun Mar 31 19:57:10 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -88,7 +88,7 @@ int		get_shm_cell(t_ipc_res *ipc_res, int x, int y,
   int		sh_i;
   int		value;
 
-  sh_i = (y * WIDTH + x);
+  sh_i = get_shm_index(x ,y);
   if (sh_i >= (WIDTH * HEIGHT) || sh_i < 0)
     return (-1);
   lock_sem(ipc_res, sh_i);

@@ -5,27 +5,31 @@
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sun Mar 31 19:46:40 2013 vincent couvignou
+## Last update Sun Mar 31 21:32:28 2013 ivan ignatiev
 ##
 
-SRCS 	= 	lemipc.c				\
-			handle_messages.c		\
-			sems.c					\
-			field.c					\
-			player.c				\
-			move_functions.c		\
-			test_functions.c		\
-			create_field.c			\
-			go_functions.c			\
-			ipcctl.c				\
-			msgs.c					\
-			run_away.c				\
-			random_move.c			\
-			attack.c				\
-			./LinkedList/my_item.c	\
-			./LinkedList/my_list.c
+SRCS 	= 	lemipc.c			\
+		handle_messages.c		\
+		sems.c				\
+		field.c				\
+		player.c			\
+		move_functions.c		\
+		test_functions.c		\
+		create_field.c			\
+		go_functions.c			\
+		ipcctl.c			\
+		msgs.c				\
+		run_away.c			\
+		random_move.c			\
+		attack.c			\
+		battle_counter.c 		\
+		./LinkedList/my_item.c		\
+		./LinkedList/my_list.c
 
-GSRCS	=	gui.c
+GSRCS	=	gui.c 				\
+		sems.c				\
+		ipcctl.c 			\
+		init_gui.c
 
 NAME 	= 	lemipc
 
@@ -48,7 +52,6 @@ $(NAME) : $(OBJS)
 
 $(GNAME) : $(GOBJS)
 	$(CC) $(GOBJS) -o $(GNAME) -lncurses
-
 
 clean	:
 	$(RM) $(OBJS)
