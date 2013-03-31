@@ -1,11 +1,11 @@
 /*
-** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sun Mar 31 13:52:09 2013 vincent couvignou
+** Last update Sun Mar 31 14:25:11 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -71,7 +71,7 @@ int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player,
       if (player_num != player->num)
 	{
 	  snd_msg.mtype = player_num;
-	  msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), 0);
+	  msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), IPC_NOWAIT);
 	}
       player_num = player_num + 1;
     }
@@ -213,7 +213,7 @@ int		player_kill(t_ipc_res *ipc_res, t_player *player, unsigned char *field)
   around[5] = get_shm_cell(ipc_res, player->x - 1, player->y + 1, field);
   around[6] = get_shm_cell(ipc_res, player->x, player->y + 1, field);
   around[7] = get_shm_cell(ipc_res, player->x + 1, player->y + 1, field);
-  if (kill_team = count_aliens(player->team_id, around))
+  if ((kill_team = count_aliens(player->team_id, around)))
     {
       clear_player(ipc_res, player, field);
       sprintf(die_msg, "DIEP:%d", player->num);
@@ -269,28 +269,25 @@ int		player_die(t_ipc_res *ipc_res, t_player *player,
   int		cnt_pl_in_team;
   int		cnt_pl;
 
-  if (player_kill(ipc_res, player, field))
-    {
-      clear_player(ipc_res, player, field);
-      return (1);
-    }
   cnt_pl_in_team = count_players_in_team(ipc_res, player, field) + 1;
   cnt_pl =  count_players(ipc_res, field);
   printf("Player %d : pl_in_t : %d / %d\n", player->num, cnt_pl_in_team, cnt_pl);
   if (cnt_pl_in_team == cnt_pl)
-    {
+  {
       printf("Player %d : Team %ld won!\n", player->num, player->team_id);
       clear_player(ipc_res, player, field);
       clear_ressources(ipc_res);
       return (1);
-    }
-  if (cnt_pl_in_team == 1)
-    {
-      printf("Player %d : I can't kill them, because I'm single"
-         " I've just kill my self.\n", player->num);
-      clear_player(ipc_res, player, field);
-      return (1);
-    }
+  }
+  if (cnt_pl_in_team <= 1)
+  {
+    printf("Player %d : I can't kill them, because I'm single"
+        " I've just kill my self.\n", player->num);
+    clear_player(ipc_res, player, field);
+    return (1);
+  }
+  if (player_kill(ipc_res, player, field))
+    return (1);
   return (0);
 }
 
@@ -307,8 +304,7 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
   printf("Player %d : Battle begun!\n", player->num);
   while (1)
     {
-      printf("Player from team[%ld] wants to move !\n", player->team_id);
-      if (/*!attack(player, field, ipc_res) || */!run_away(player, field, ipc_res))
+      if (/*!attack(player, field, ipc_res) ||*/ !run_away(player, field, ipc_res))
 	random_move(player, field, ipc_res);
       if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg, p_fct);
