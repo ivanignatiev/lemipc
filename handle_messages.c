@@ -5,13 +5,14 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Sun Mar 31 20:37:25 2013 ivan ignatiev
+** Last update Sun Mar 31 21:41:01 2013 ivan ignatiev
 */
 
 #include "handle_messages.h"
 #include "lemipc.h"
 
-void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+void			newp_messages(t_ipc_res *ipc_res, t_player *player,
+				      const char *msg)
 {
   t_player_list		*newp;
   char			resp[MESSAGE_SIZE];
@@ -26,7 +27,8 @@ void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
-void			oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+void			oldp_messages(t_ipc_res *ipc_res, t_player *player,
+				      const char *msg)
 {
   t_player_list		*newp;
 
@@ -47,10 +49,10 @@ void	move_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   (void)ipc_res;
   sscanf(msg, "MOVE:%d", &player_num);
   sprintf(resp, "MOVE:%d", player->num);
-  /* Find where to move and move one case... */
 }
 
-void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
+void		diep_messages(t_ipc_res *ipc_res, t_player *player,
+			      const char *msg)
 {
   int		player_num;
   char		resp[MESSAGE_SIZE];

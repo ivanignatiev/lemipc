@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sun Mar 31 19:16:18 2013 ivan ignatiev
-** Last update Sun Mar 31 20:38:11 2013 ivan ignatiev
+** Last update Sun Mar 31 21:41:26 2013 ivan ignatiev
 */
 
 #include	"lemipc.h"
@@ -27,7 +27,8 @@ int		send_msg_to_team(t_ipc_res *ipc_res, t_player *player,
       if (player_num != player->num)
 	{
 	  snd_msg.mtype = player_num;
-	  msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), IPC_NOWAIT);
+	  msgsnd(ipc_res->msg_id, (const void *)&snd_msg,
+		 sizeof(t_msg), IPC_NOWAIT);
 	}
       player_num = player_num + 1;
     }
@@ -43,7 +44,8 @@ int		send_msg_to_player(t_ipc_res *ipc_res, t_player *player,
   strcpy(snd_msg.msg, msg);
   snd_msg.sender = player->num;
   snd_msg.mtype = player_num;
-  return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), IPC_NOWAIT));
+  return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg,
+		 sizeof(t_msg), IPC_NOWAIT));
 }
 
 int		send_msg_to_gui(t_ipc_res *ipc_res, t_player *player,
@@ -58,7 +60,8 @@ int		send_msg_to_gui(t_ipc_res *ipc_res, t_player *player,
   va_end(ap);
   snd_msg.sender = player->num;
   snd_msg.mtype = GUI_MSG_TYPE;
-  return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg, sizeof(t_msg), IPC_NOWAIT));
+  return (msgsnd(ipc_res->msg_id, (const void *)&snd_msg,
+		 sizeof(t_msg), IPC_NOWAIT));
 }
 
 int		recv_msg_from_team(t_ipc_res *ipc_res,

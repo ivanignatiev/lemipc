@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sun Mar 31 21:31:16 2013 ivan ignatiev
+** Last update Sun Mar 31 21:39:22 2013 ivan ignatiev
 */
 
 #include	"gui.h"
@@ -26,6 +26,8 @@ void		display_field(WINDOW *win, t_ipc_res *ipc_res,
       wattron(win, COLOR_PAIR(field[i]));
       if (field[i] != 0)
 	wprintw(win, "%3u", field[i]);
+      else
+	wprintw(win, "%3c", ' ');
       wattroff(win, COLOR_PAIR(field[i]));
       if (field[i])
 	wattroff(win, A_BOLD);
@@ -91,7 +93,7 @@ int		gui_field(t_ipc_res *ipc_res,
   return (EXIT_FAILURE);
 }
 
-int		main()
+int		main(void)
 {
   key_t		key;
   t_ipc_res	ipc_res;
@@ -102,15 +104,16 @@ int		main()
     return (EXIT_FAILURE);
   if ((key = ftok(pwd, 1)) < 0)
     return (EXIT_FAILURE);
-  if ((ipc_res.field_id = shmget(key, WIDTH * HEIGHT, SHM_R | SHM_W)) != -1)
+  if ((ipc_res.field_id = shmget(key, WIDTH * HEIGHT, SHM_SLAVE)) != -1)
     {
-      if ((ipc_res.sem_id = semget(key, WIDTH * HEIGHT + 1, SHM_R | SHM_W)) == -1
+      if ((ipc_res.sem_id = semget(key, WIDTH * HEIGHT + 1, SHM_SLAVE)) == -1
 	  || (ipc_res.msg_id = msgget(key, SHM_R | SHM_W)) == -1)
         return (EXIT_FAILURE);
-      if ((field = (unsigned char*)shmat(ipc_res.field_id, NULL, SHM_R | SHM_W)) == NULL)
+      if ((field = (unsigned char*)shmat(ipc_res.field_id, NULL, SHM_SLAVE))
+	  == NULL)
 	return (EXIT_FAILURE);
       ressources_info(&ipc_res);
-      return (gui_field(&ipc_res,field));
+      return (gui_field(&ipc_res, field));
     }
   return (EXIT_FAILURE);
 }
