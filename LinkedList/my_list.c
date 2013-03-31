@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Mon Mar 25 23:52:55 2013 vincent couvignou
-** Last update Tue Mar 26 17:00:40 2013 vincent couvignou
+** Last update Sun Mar 31 18:21:47 2013 vincent couvignou
 */
 
 #include "my_list.h"

@@ -1,11 +1,11 @@
 ##
-## Makefile for lemipc in /home/ignati_i/projects/lemipc
+## Makefile for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ##
 ## Made by ivan ignatiev
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sat Mar 30 19:17:30 2013 ivan ignatiev
+## Last update Sun Mar 31 19:39:15 2013 vincent couvignou
 ##
 
 
@@ -14,6 +14,10 @@ SRCS 	= 	lemipc.c			\
 			run_away.c		\
 			random_move.c		\
 			attack.c		\
+			move_functions.c	\
+			test_functions.c	\
+			create_field.c		\
+			go_functions.c		\
 			./LinkedList/my_item.c	\
 			./LinkedList/my_list.c
 

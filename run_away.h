@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 13:35:14 2013 vincent couvignou
-** Last update Sat Mar 30 18:20:57 2013 vincent couvignou
+** Last update Sun Mar 31 19:28:48 2013 vincent couvignou
 */
 
 #ifndef RUN_AWAY_H_
@@ -13,8 +13,7 @@
 
 # include <string.h>
 # include "lemipc_structures.h"
-
-# define DEF_RANGE	4
+# include "go_functions.h"
 
 int		run_away(t_player *player, unsigned char *field, t_ipc_res *);
 void		create_dfield(unsigned char *field,

@@ -1,11 +1,11 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sun Mar 31 18:30:43 2013 ivan ignatiev
+** Last update Sun Mar 31 19:15:35 2013 vincent couvignou
 */
 
 #include	"lemipc.h"

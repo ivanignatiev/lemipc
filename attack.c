@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Sat Mar 30 13:42:17 2013 vincent couvignou
-** Last update Sun Mar 31 15:38:58 2013 vincent couvignou
+** Last update Sun Mar 31 19:25:34 2013 vincent couvignou
 */
 
 #include <math.h>
@@ -13,82 +13,19 @@
 #include "lemipc.h"
 #include "run_away.h"
 
-#define ATK_RANGE	4
+#define ATK_RANGE	6
 
-int	count_ally_atk(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
-    		int range)
+static int	range(t_player *player, int x, int y)
 {
-  int	min_x;
-  int	min_y;
-  int	max_x;
-  int	max_y;
-  int	count;
-
-  min_x = ((player->x - range + 1< 0) ? 0 : player->x - range) + 1;
-  min_y = ((player->y - range + 1< 0) ? 0 : player->y - range) + 1;
-  max_x = (player->x + range + 1 > HEIGHT)
-    		? HEIGHT : player->x + range + 1;
-  max_y = (player->y + range + 1 > WIDTH)
-    		? WIDTH : player->y + range + 1;
-  count = 0;
-  while (min_x < max_x)
-  {
-    while (min_y < max_y)
-    {
-      if (player->team_id == d_field[min_x][min_y])
-	count++;
-      min_y++;
-    }
-    min_x++;
-  }
-  return (count);
-}
-
-static	int	max_tab(int teams[MAX_TEAM_NUM], int team_number)
-{
-  int		max;
-  int		i;
-
-  max = -1;
-  i = -1;
-  while (++i < MAX_TEAM_NUM)
-    if ((i != team_number - 1) && teams[i] > max)
-      max = i;
-  return (i + 1);
-}
-
-int	count_ennemy_atk(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
-    			int range)
-{
-  int	min_x;
-  int	min_y;
-  int	max_x;
-  int	max_y;
-  int	teams[MAX_TEAM_NUM];
-
-  bzero(teams, sizeof(int) * MAX_TEAM_NUM);
-  min_x = ((player->x - range < 0) ? 0 : player->x - range) - 1;
-  min_y = ((player->y - range < 0) ? 0 : player->y - range) - 1;
-  max_x = (player->x + range > HEIGHT) ? HEIGHT : player->x + range;
-  max_y = (player->y + range > WIDTH) ? WIDTH : player->y + range;
-  while (++min_x < max_x)
-    while (++min_y < max_y)
-      if (d_field[min_x][min_y] != 0)
-	teams[d_field[min_x][min_y] - 1]++;
-  return (max_tab(teams, player->team_id));
-}
-
-int	range(t_player *player, int x, int y)
-{
-  int	range_x;
-  int	range_y;
+  int		range_x;
+  int		range_y;
 
   range_x = (player->x - x > 0) ? player->x - x : x - player->x;
   range_y = (player->y - y > 0) ? player->y - y : y - player->y;
   return (sqrt(range_x * range_x + range_y * range_y));
 }
 
-void	change_position(t_player *player, int x, int y)
+static void	change_position(t_player *player, int x, int y)
 {
   if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT)
     return ;
@@ -96,46 +33,45 @@ void	change_position(t_player *player, int x, int y)
   player->y = y;
 }
 
-
-
-int	attack_ennemy(int range_player, t_player *player,
+static int	attack_ennemy(int range_player, t_player *player,
     			int min_x, int min_y)
 {
   change_position(player, player->x + 1, player->y + 1);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x, player->y - 2);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x, player->y + 1);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x - 1, player->y - 1);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x, player->y + 2);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x - 1, player->y);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x, player->y - 2);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
   change_position(player, player->x, player->y + 1);
-  if (range_player > range(player, min_x, min_y))
+  if (range_player >= range(player, min_x, min_y))
     return (1);
+  printf("No position...\n");
   return (1);
 }
 
-int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
+static int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
     			t_ipc_res *ipc_res)
 {
-  int	min_x;
-  int	min_y;
-  int	max_x;
-  int	max_y;
-  int	teams[MAX_TEAM_NUM];
+  int		min_x;
+  int		min_y;
+  int		max_x;
+  int		max_y;
+  int		teams[MAX_TEAM_NUM];
 
   (void)ipc_res;
   bzero(teams, sizeof(int) * MAX_TEAM_NUM);
@@ -148,12 +84,8 @@ int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
     {
       if (d_field[min_x][min_y] != 0
 	  && d_field[min_x][min_y] != player->team_id)
-      {
-	 if (count_ally_atk(d_field, player, range(player, min_x, min_y)) >=
-	       count_ennemy_atk(d_field, player, range(player, min_x, min_y)))
-	   attack_ennemy(range(player, min_x, min_y),
-	       			player, min_x, min_y);
-      }
+	   return (attack_ennemy(range(player, min_x, min_y),
+	       			player, min_x, min_y));
     }
   return (0);
 }
@@ -175,8 +107,7 @@ int		attack(t_player *player, unsigned char *field, t_ipc_res *ipc)
   {
     change_position(player, current_x, current_y);
     return (0);
-   }
-  printf("In attack[%ld] [%d][%d] new[%d][%d]\n", player->team_id, current_x, current_y, player->x, player->y);
+  }
   lock_sem(ipc, get_shm_index(current_x, current_y));
   field[get_shm_index(current_x, current_y)] = 0;
   unlock_sem(ipc, get_shm_index(current_x, current_y));

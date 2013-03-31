@@ -1,11 +1,11 @@
 /*
-** gui.c for lemipc in /home/ignati_i/projects/lemipc
+** gui.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sun Mar 31 18:29:26 2013 ivan ignatiev
+** Last update Sun Mar 31 19:23:21 2013 vincent couvignou
 */
 
 #include	<ncurses.h>
@@ -61,7 +61,8 @@ void		display_field(WINDOW *win, t_ipc_res *ipc_res,
       if (field[i])
 	wattron(win, A_BOLD);
       wattron(win, COLOR_PAIR(field[i]));
-      wprintw(win, "%3u", field[i]);
+      if (field[i] != 0)
+	wprintw(win, "%3u", field[i]);
       wattroff(win, COLOR_PAIR(field[i]));
       if (field[i])
 	wattroff(win, A_BOLD);

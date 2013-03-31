@@ -1,11 +1,11 @@
 /*
-** handle_messages.c for lemipc in /home/ignati_i/projects/lemipc
+** handle_messages.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Sun Mar 31 18:11:44 2013 ivan ignatiev
+** Last update Sun Mar 31 18:37:23 2013 vincent couvignou
 */
 
 #include "handle_messages.h"
@@ -63,17 +63,17 @@ void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   tmp_player = NULL;
   sscanf(msg, "DIEP:%d", &player_num);
   sprintf(resp, "DIEP:%d", player->num);
-  /*tmp = player->player_list->head;
+  tmp = player->player_list->head;
   while (tmp != NULL)
   {
-    bcopy(tmp_player, tmp->content, tmp->size);
+    tmp_player = (t_player_list *)tmp->content;
     if (tmp_player->player_number == player_num)
     {
       tmp_player->activated = false;
       return ;
     }
     tmp = tmp->next;
-  }*/
+  }
 }
 
 void	init_fct(t_fct_messages *fct_array)

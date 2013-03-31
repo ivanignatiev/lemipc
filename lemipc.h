@@ -16,6 +16,7 @@
 # include "run_away.h"
 # include "random_move.h"
 # include "lemipc_structures.h"
+# include "attack.h"
 
 int		count_players(t_ipc_res *ipc_res,
 			      unsigned char *field);
