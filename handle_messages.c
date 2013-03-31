@@ -1,11 +1,11 @@
 /*
-** handle_messages.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
+** handle_messages.c for lemipc in /home/ignati_i/projects/lemipc
 ** 
 ** Made by vincent couvignou
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 15:57:22 2013 vincent couvignou
-** Last update Sat Mar 30 18:31:09 2013 vincent couvignou
+** Last update Sun Mar 31 18:11:44 2013 ivan ignatiev
 */
 
 #include "handle_messages.h"
@@ -13,39 +13,31 @@
 
 void			newp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
-  int			player_num;
   t_player_list		*newp;
   char			resp[MESSAGE_SIZE];
 
-  if ((newp = malloc(sizeof(*newp))) == NULL)
+  if ((newp = malloc(sizeof(t_player_list))) == NULL)
     return ;
-  sscanf(msg, "NEWP:%d", &player_num);
-  sprintf(resp, "OLDP:%d", player->num);
-  send_message_to_player(ipc_res, player, player_num, resp);
-  printf("New player came to our team (%d)!\n", player_num);
-  newp->player_number = player_num;
+  sscanf(msg, "NEWP:%d:%d:%d",
+        &newp->player_number, &newp->player_x, &newp->player_y);
+  sprintf(resp, "OLDP:%d:%d:%d", player->num, player->x, player->y);
+  send_message_to_player(ipc_res, player, newp->player_number, resp);
+  printf("New player came to our team (%d)!\n", newp->player_number);
   newp->activated = true;
-  newp->player_x = 0;
-  newp->player_y = 0;
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
 void			oldp_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
 {
-  int			player_num;
   t_player_list		*newp;
-  char			resp[MESSAGE_SIZE];
 
   (void)ipc_res;
-if ((newp = malloc(sizeof(*newp))) == NULL)
+  if ((newp = malloc(sizeof(t_player_list))) == NULL)
     return ;
-  sscanf(msg, "OLDP:%d", &player_num);
-  sprintf(resp, "OLDP:%d", player->num);
-  printf("Old player %d\n", player_num);
-  newp->player_number = player_num;
+  sscanf(msg, "OLDP:%d:%d:%d",
+      &newp->player_number, &newp->player_x, &newp->player_y);
+  printf("Old player %d\n", newp->player_number);
   newp->activated = true;
-  newp->player_x = 0;
-  newp->player_y = 0;
   player->player_list->add_front(player->player_list, newp, sizeof(*newp));
 }
 
@@ -71,7 +63,7 @@ void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
   tmp_player = NULL;
   sscanf(msg, "DIEP:%d", &player_num);
   sprintf(resp, "DIEP:%d", player->num);
-  tmp = player->player_list->head;
+  /*tmp = player->player_list->head;
   while (tmp != NULL)
   {
     bcopy(tmp_player, tmp->content, tmp->size);
@@ -81,7 +73,7 @@ void		diep_messages(t_ipc_res *ipc_res, t_player *player, const char *msg)
       return ;
     }
     tmp = tmp->next;
-  }
+  }*/
 }
 
 void	init_fct(t_fct_messages *fct_array)

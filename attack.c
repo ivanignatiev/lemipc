@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Sat Mar 30 13:42:17 2013 vincent couvignou
-** Last update Sun Mar 31 13:44:18 2013 vincent couvignou
+** Last update Sun Mar 31 15:38:58 2013 vincent couvignou
 */
 
 #include <math.h>
@@ -137,6 +137,7 @@ int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
   int	max_y;
   int	teams[MAX_TEAM_NUM];
 
+  (void)ipc_res;
   bzero(teams, sizeof(int) * MAX_TEAM_NUM);
   min_x = ((player->x - ATK_RANGE < 0) ? 0 : player->x - ATK_RANGE) - 1;
   min_y = ((player->y - ATK_RANGE < 0) ? 0 : player->y - ATK_RANGE) - 1;
@@ -150,12 +151,8 @@ int	find_ennemy(unsigned char d_field[HEIGHT][WIDTH], t_player *player,
       {
 	 if (count_ally_atk(d_field, player, range(player, min_x, min_y)) >=
 	       count_ennemy_atk(d_field, player, range(player, min_x, min_y)))
-	 {
-	   printf("previous position[%d][%d] ", player->x, player->y);
 	   attack_ennemy(range(player, min_x, min_y),
 	       			player, min_x, min_y);
-	   printf("min_x[%d] min_y[%d] new_pos[%d][%d]\n", min_x, min_y, player->x, player->y);
-	 }
       }
     }
   return (0);
@@ -168,7 +165,6 @@ int		attack(t_player *player, unsigned char *field, t_ipc_res *ipc)
   int		current_x;
   int		current_y;
 
-  printf("In attack[%ld]\n", player->team_id);
   current_x = player->x;
   current_y = player->y;
   create_dfield(field, d_field, ipc);
@@ -180,6 +176,7 @@ int		attack(t_player *player, unsigned char *field, t_ipc_res *ipc)
     change_position(player, current_x, current_y);
     return (0);
    }
+  printf("In attack[%ld] [%d][%d] new[%d][%d]\n", player->team_id, current_x, current_y, player->x, player->y);
   lock_sem(ipc, get_shm_index(current_x, current_y));
   field[get_shm_index(current_x, current_y)] = 0;
   unlock_sem(ipc, get_shm_index(current_x, current_y));

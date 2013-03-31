@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sun Mar 31 15:51:59 2013 ivan ignatiev
+** Last update Sun Mar 31 16:34:18 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>

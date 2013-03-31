@@ -5,22 +5,27 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 16:46:11 2013 vincent couvignou
-** Last update Sun Mar 31 13:43:05 2013 vincent couvignou
+** Last update Sun Mar 31 15:24:30 2013 vincent couvignou
 */
 
 #include "random_move.h"
 #include "run_away.h"
 #include "lemipc.h"
 
-int             count_player(int *around)
+int             count_player(int *around, unsigned char *field)
 {
   int           i;
   int           count;
 
   i = -1;
+  count = 0;
   while (++i < 8)
-   if (around[i] > 0)
+  {
+    printf("[%d] ", field[around[i]]);
+   if (field[around[i]] > 0)
      count++;
+  }
+  printf("\n");
   return (count);
 }
 
@@ -35,8 +40,10 @@ void	move_r(unsigned char *field, t_player *player,
   while (around[p_case] < 0 || field[around[p_case]] != 0)
     p_case = rand() % 8;
   player->sh_i = around[p_case];
+  printf("[%d][%d] ", player->x, player->y);
   player->x = around[p_case] / HEIGHT;
   player->y = around[p_case] % HEIGHT;
+  printf("new[%d][%d]\n", player->x, player->y);
   lock_sem(ipc_res, previous_sh_i);
   lock_sem(ipc_res, player->sh_i);
   field[previous_sh_i] = 0;
@@ -58,8 +65,10 @@ bool	test_move(unsigned char *field, t_player *player,
   around[5] =  get_shm_index(player->x - 1, player->y + 1);
   around[6] =  get_shm_index(player->x, player->y + 1);
   around[7] =  get_shm_index(player->x + 1, player->y + 1);
-  if (count_player(around) < 8)
+  int count;
+  if ((count = count_player(around, field)) < 8)
     return (true);
+  printf("count_player[%ld][%d]\n", player->team_id, count);
   return (false);
 }
 

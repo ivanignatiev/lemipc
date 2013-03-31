@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:26:00 2013 vincent couvignou
-** Last update Thu Mar 28 03:15:50 2013 ivan ignatiev
+** Last update Sun Mar 31 17:56:59 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_STRUCTURES_H_
