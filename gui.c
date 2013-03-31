@@ -1,11 +1,11 @@
 /*
-** gui.c for lemipc in /home/ignati_i/projects/lemipc
+** gui.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 20:39:36 2013 ivan ignatiev
+** Last update Sun Mar 31 15:28:42 2013 vincent couvignou
 */
 
 #include	<ncurses.h>
@@ -101,8 +101,8 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
 	return (EXIT_SUCCESS);
       }
     capture = capture + 1;
-    sleep(1);
     refresh();
+    sleep(1);
   }
 }
 
