@@ -5,17 +5,22 @@
 ## Login   <ignati_i@epitech.net>
 ##
 ## Started on  Tue Mar 26 14:10:36 2013 ivan ignatiev
-## Last update Sat Mar 30 19:17:30 2013 ivan ignatiev
+## Last update Sun Mar 31 19:33:16 2013 ivan ignatiev
 ##
 
 
-SRCS 	= 	lemipc.c			\
-			handle_messages.c	\
-			run_away.c		\
-			random_move.c		\
-			attack.c		\
-			./LinkedList/my_item.c	\
-			./LinkedList/my_list.c
+SRCS 	= 	lemipc.c		\
+		handle_messages.c	\
+		sems.c 			\
+		field.c 		\
+		player.c 		\
+		ipcctl.c 		\
+		msgs.c 			\
+		run_away.c		\
+		random_move.c		\
+		attack.c		\
+		./LinkedList/my_item.c	\
+		./LinkedList/my_list.c
 
 GSRCS	=	gui.c
 

@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Tue Mar 26 16:26:00 2013 vincent couvignou
-** Last update Sun Mar 31 17:56:59 2013 ivan ignatiev
+** Last update Sun Mar 31 19:02:58 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_STRUCTURES_H_
@@ -28,6 +28,8 @@
 # define MAX_TEAM_NUM           10
 # define FIGTH_TIMEOUT          5
 # define AVAILBL_PLACES_SEM     (WIDTH * HEIGHT)
+# define SHM_MASTER		IPC_CREAT | SHM_R | SHM_W
+# define SHM_SLAVE		SHM_R | SHM_W
 
 typedef struct	s_ipc_res
 {
@@ -59,5 +61,7 @@ typedef struct	s_msg
   long		mtype;
   char		msg[255];
 }		t_msg;
+
+typedef unsigned char t_uchar;
 
 #endif /* !LEMIPC_STRUCTURES_H_ */
