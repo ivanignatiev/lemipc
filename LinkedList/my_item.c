@@ -1,3 +1,13 @@
+/*
+** my_item.c for  in /home/couvig_v//ProjetsEnCours/LemIPC/LemIPC/LinkedList
+** 
+** Made by vincent couvignou
+** Login   <couvig_v@epitech.net>
+** 
+** Started on  Sun Mar 31 21:24:09 2013 vincent couvignou
+** Last update Sun Mar 31 21:24:11 2013 vincent couvignou
+*/
+
 #include "my_item.h"
 
 t_my_item 	new_item_default()

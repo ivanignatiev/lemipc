@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Tue Mar 26 14:17:37 2013 ivan ignatiev
-** Last update Sun Mar 31 21:32:03 2013 ivan ignatiev
+** Last update Sun Mar 31 21:34:14 2013 ivan ignatiev
 */
 
 #ifndef LEMIPC_H_
