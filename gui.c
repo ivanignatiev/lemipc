@@ -5,7 +5,7 @@
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Sat Mar 30 15:19:36 2013 ivan ignatiev
-** Last update Sat Mar 30 20:39:36 2013 ivan ignatiev
+** Last update Sun Mar 31 15:51:59 2013 ivan ignatiev
 */
 
 #include	<ncurses.h>
@@ -47,7 +47,8 @@ void		init_colors()
   init_pair(9, COLOR_BLUE, COLOR_YELLOW);
 }
 
-void		display_field(t_ipc_res *ipc_res, unsigned char *field)
+void		display_field(WINDOW *win, t_ipc_res *ipc_res,
+			      unsigned char *field)
 {
   int		i;
 
@@ -56,15 +57,15 @@ void		display_field(t_ipc_res *ipc_res, unsigned char *field)
     {
       lock_sem(ipc_res, i);
       if (field[i])
-	attron(A_BOLD);
-      attron(COLOR_PAIR(field[i]));
-      printw("%3u", field[i]);
-      attroff(COLOR_PAIR(field[i]));
+	wattron(win, A_BOLD);
+      wattron(win, COLOR_PAIR(field[i]));
+      wprintw(win, "%3u", field[i]);
+      wattroff(win, COLOR_PAIR(field[i]));
       if (field[i])
-	attroff(A_BOLD);
+	wattroff(win, A_BOLD);
       unlock_sem(ipc_res, i);
       if ((i + 1) % WIDTH == 0)
-	printw("\n");
+	wprintw(win, "\n");
       i = i + 1;
     }
 }
@@ -76,10 +77,9 @@ void		clear_ressources(t_ipc_res *ipc_res)
   msgctl(ipc_res->msg_id, IPC_RMID, NULL);
 }
 
-int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
+WINDOW		*init_filed_window(void)
 {
-  char c;
-  int   capture;
+  WINDOW	*win;
 
   initscr();
   cbreak();
@@ -87,22 +87,41 @@ int		gui_field(t_ipc_res *ipc_res, unsigned char *field)
   noecho();
   init_colors();
   timeout(1);
+  win = newwin(12, 32, 10, 10);
+  return (win);
+}
+
+void		destroy_field_window(WINDOW *win)
+{
+  delwin(win);
+  endwin();
+}
+
+int		gui_field(t_ipc_res *ipc_res,
+			  unsigned char *field)
+{
+  char		key;
+  int		capture;
+  WINDOW	*win;
+
+  win = init_filed_window();
   capture = 0;
   while (1)
   {
-    clear();
-    display_field(ipc_res, field);
-    printw("%d\n", capture);
-    c = getch();
-    if (c == 'q')
+    wclear(win);
+    wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
+    display_field(win, ipc_res, field);
+    wprintw(win, "%d\n", capture);
+    key = getch();
+    if (key == 'q')
       {
         clear_ressources(ipc_res);
-	endwin();
+	destroy_field_window(win);
 	return (EXIT_SUCCESS);
       }
     capture = capture + 1;
+    wrefresh(win);
     sleep(1);
-    refresh();
   }
 }
 
