@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 13:35:05 2013 vincent couvignou
-** Last update Sat Mar 30 20:43:00 2013 vincent couvignou
+** Last update Sun Mar 31 13:43:57 2013 vincent couvignou
 */
 
 #include "run_away.h"
@@ -231,7 +231,6 @@ static int		move_right(t_player *player, unsigned char *field,
 {
   int			decision;
 
-  printf("right[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x, player->y + 1);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
     return (0);
@@ -239,11 +238,9 @@ static int		move_right(t_player *player, unsigned char *field,
   field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
   lock_sem(ipc_res, decision);
-  printf("right lock decision : %d\n", decision);
   player->y += 1;
   player->sh_i = decision;
   field[player->sh_i] = player->team_id;
-  printf("player[%d][%d]\n", player->x, player->y);
   unlock_sem(ipc_res, decision);
   return (1);
 }
@@ -253,7 +250,6 @@ static int		move_left(t_player *player, unsigned char *field,
 {
   int			decision;
 
-  printf("left[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x, player->y - 1);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
     return (0);
@@ -261,11 +257,9 @@ static int		move_left(t_player *player, unsigned char *field,
   field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
   lock_sem(ipc_res, decision);
-  printf("left lock decision : %d\n", decision);
   player->y -= 1;
   player->sh_i = decision;
   field[player->sh_i] = player->team_id;
-  printf("player[%d][%d]\n", player->x, player->y);
   unlock_sem(ipc_res, decision);
   return (1);
 }
@@ -275,7 +269,6 @@ static int		move_up(t_player *player, unsigned char *field,
 {
   int			decision;
 
-  printf("up[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x - 1, player->y);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
     return (0);
@@ -283,11 +276,9 @@ static int		move_up(t_player *player, unsigned char *field,
   field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
   lock_sem(ipc_res, decision);
-  printf("up lock decision : %d\n", decision);
   player->sh_i = decision;
   player->x -= 1;
   field[player->sh_i] = player->team_id;
-  printf("player[%d][%d]\n", player->x, player->y);
   unlock_sem(ipc_res, decision);
   return (1);
 }
@@ -297,7 +288,6 @@ static int		move_down(t_player *player, unsigned char *field,
 {
   int			decision;
 
-  printf("down[%ld] : player[%d][%d]\t", player->team_id, player->x, player->y);
   decision = get_shm_index(player->x + 1, player->y);
   if (field[decision] != 0 || semctl(ipc_res->sem_id, decision, GETVAL, 0) <= 0)
     return (0);
@@ -305,11 +295,9 @@ static int		move_down(t_player *player, unsigned char *field,
   field[player->sh_i] = 0;
   unlock_sem(ipc_res, player->sh_i);
   lock_sem(ipc_res, decision);
-  printf("down lock decision : %d\n", decision);
   player->x += 1;
   player->sh_i = decision;
   field[player->sh_i] = player->team_id;
-  printf("player[%d][%d]\n", player->x, player->y);
   unlock_sem(ipc_res, decision);
   return (1);
 }
@@ -378,6 +366,7 @@ int		run_away(t_player *player, unsigned char *field,
   int		nb_allies;
   int		nb_ennemies;
 
+  printf("In run_away[%ld]\n", player->team_id);
   create_dfield(field, d_field, ipc_res);
   create_dfield(field, debug_field, ipc_res);
   nb_allies = count_ally(d_field, player->x, player->y, player->team_id);

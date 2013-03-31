@@ -1,11 +1,11 @@
 /*
-** lemipc.c for lemipc in /home/ignati_i/projects/lemipc
+** lemipc.c for LemIPC in /home/couvig_v/ProjetsEnCours/LemIPC/LemIPC
 ** 
 ** Made by ivan ignatiev
 ** Login   <ignati_i@epitech.net>
 ** 
 ** Started on  Mon Mar 25 15:30:47 2013 ivan ignatiev
-** Last update Sat Mar 30 20:53:25 2013 ivan ignatiev
+** Last update Sun Mar 31 13:52:09 2013 vincent couvignou
 */
 
 #include	"lemipc.h"
@@ -307,12 +307,9 @@ int			slave_process(t_ipc_res *ipc_res, t_player *player,
   printf("Player %d : Battle begun!\n", player->num);
   while (1)
     {
-
-      if (!run_away(player, field, ipc_res))
-      {
-	printf("Random move %ld[%d]!!\n", player->team_id, player->num);
+      printf("Player from team[%ld] wants to move !\n", player->team_id);
+      if (/*!attack(player, field, ipc_res) || */!run_away(player, field, ipc_res))
 	random_move(player, field, ipc_res);
-      }
       if ((msg_size = recv_msg_from_team(ipc_res, player, &ipc_msg)) > 0)
 	parse_message(ipc_res, player, ipc_msg.msg, p_fct);
       else if (msg_size == -1 && errno != ENOMSG)

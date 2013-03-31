@@ -5,7 +5,7 @@
 ** Login   <couvig_v@epitech.net>
 ** 
 ** Started on  Fri Mar 29 16:46:11 2013 vincent couvignou
-** Last update Sat Mar 30 18:47:20 2013 vincent couvignou
+** Last update Sun Mar 31 13:43:05 2013 vincent couvignou
 */
 
 #include "random_move.h"
@@ -69,6 +69,7 @@ int			random_move(t_player *player, unsigned char *field,
   unsigned char	d_field[HEIGHT][WIDTH];
   int           around[8];
 
+  printf("In random move[%ld]\n", player->team_id);
   create_dfield(field, d_field, ipc_res);
   if (test_move(field, player, ipc_res, around) == false)
     return (1);
